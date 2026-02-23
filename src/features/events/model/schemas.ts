@@ -17,6 +17,7 @@ export const eventResourceSchema = z.object({
 });
 
 export const speakerSchema = z.object({
+  id: z.string(),
   name: z.string().min(1),
   title: z.string().min(1),
   company: z.string().min(1),

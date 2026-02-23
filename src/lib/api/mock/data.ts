@@ -60,6 +60,7 @@ export const mockEvents: EventData[] = [
     ],
     speakers: [
       {
+        id: "sp-1",
         name: "Alex Rivera",
         title: "CEO",
         company: "ShowPro Productions",
@@ -67,6 +68,7 @@ export const mockEvents: EventData[] = [
         bio: "Pioneer in hybrid event technology with 15 years of experience in AV production.",
       },
       {
+        id: "sp-2",
         name: "Jordan Lee",
         title: "Director of Engineering",
         company: "StreamCore",
@@ -122,6 +124,7 @@ export const mockEvents: EventData[] = [
     ],
     speakers: [
       {
+        id: "sp-3",
         name: "Morgan Chen",
         title: "Lead Technical Director",
         company: "ShowPro Productions",
@@ -180,6 +183,7 @@ export const mockEvents: EventData[] = [
     ],
     speakers: [
       {
+        id: "sp-4",
         name: "Priya Kapoor",
         title: "Festival Director",
         company: "Bright Lights AV",
@@ -187,6 +191,7 @@ export const mockEvents: EventData[] = [
         bio: "Curator of immersive festival experiences blending live music and visual art.",
       },
       {
+        id: "sp-5",
         name: "Sam Ortiz",
         title: "Audio Engineer",
         company: "Bright Lights AV",
@@ -251,6 +256,7 @@ export const mockEvents: EventData[] = [
     ],
     speakers: [
       {
+        id: "sp-6",
         name: "Taylor Nguyen",
         title: "VP of Sales",
         company: "Bright Lights AV",

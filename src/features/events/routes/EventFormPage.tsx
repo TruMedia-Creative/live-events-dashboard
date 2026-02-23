@@ -145,6 +145,16 @@ export function EventFormPage() {
       venue: formData.venue || undefined,
       bannerUrl: formData.bannerUrl || undefined,
       stream: formData.stream?.provider ? formData.stream : undefined,
+      speakers: formData.speakers.map((s) => ({
+        ...s,
+        headshotUrl: s.headshotUrl || undefined,
+        bio: s.bio || undefined,
+      })),
+      sessions: formData.sessions.map((s) => ({
+        ...s,
+        description: s.description || undefined,
+        speakerName: s.speakerName || undefined,
+      })),
     };
 
     // Validate with Zod schema manually to handle zod/v4 compat
@@ -408,6 +418,7 @@ export function EventFormPage() {
                     type="button"
                     onClick={() => removeSpeaker(index)}
                     className="text-sm text-red-600 hover:text-red-800"
+                    aria-label={`Remove speaker ${index + 1}`}
                   >
                     Remove
                   </button>
@@ -420,6 +431,9 @@ export function EventFormPage() {
                       {...register(`speakers.${index}.name`)}
                       className={inputClass}
                     />
+                    {errors.speakers?.[index]?.name && (
+                      <p className="mt-1 text-sm text-red-600">{errors.speakers[index].name.message}</p>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>Title / Role</label>
@@ -428,6 +442,9 @@ export function EventFormPage() {
                       {...register(`speakers.${index}.title`)}
                       className={inputClass}
                     />
+                    {errors.speakers?.[index]?.title && (
+                      <p className="mt-1 text-sm text-red-600">{errors.speakers[index].title.message}</p>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>Company</label>
@@ -436,6 +453,9 @@ export function EventFormPage() {
                       {...register(`speakers.${index}.company`)}
                       className={inputClass}
                     />
+                    {errors.speakers?.[index]?.company && (
+                      <p className="mt-1 text-sm text-red-600">{errors.speakers[index].company.message}</p>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>
@@ -447,6 +467,9 @@ export function EventFormPage() {
                       {...register(`speakers.${index}.headshotUrl`)}
                       className={inputClass}
                     />
+                    {errors.speakers?.[index]?.headshotUrl && (
+                      <p className="mt-1 text-sm text-red-600">{errors.speakers[index].headshotUrl.message}</p>
+                    )}
                   </div>
                 </div>
                 <div className="mt-3">
@@ -459,12 +482,20 @@ export function EventFormPage() {
                     className={inputClass}
                   />
                 </div>
+                <input type="hidden" {...register(`speakers.${index}.id`)} />
               </div>
             ))}
             <button
               type="button"
               onClick={() =>
-                appendSpeaker({ name: "", title: "", company: "", headshotUrl: "", bio: "" })
+                appendSpeaker({
+                  id: crypto.randomUUID(),
+                  name: "",
+                  title: "",
+                  company: "",
+                  headshotUrl: "",
+                  bio: "",
+                })
               }
               className="rounded-md border border-dashed border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
             >
@@ -492,6 +523,7 @@ export function EventFormPage() {
                     type="button"
                     onClick={() => removeResource(index)}
                     className="text-sm text-red-600 hover:text-red-800"
+                    aria-label={`Remove resource ${index + 1}`}
                   >
                     Remove
                   </button>
@@ -505,6 +537,9 @@ export function EventFormPage() {
                       {...register(`resources.${index}.name`)}
                       className={inputClass}
                     />
+                    {errors.resources?.[index]?.name && (
+                      <p className="mt-1 text-sm text-red-600">{errors.resources[index].name.message}</p>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>File URL</label>
@@ -514,6 +549,9 @@ export function EventFormPage() {
                       {...register(`resources.${index}.url`)}
                       className={inputClass}
                     />
+                    {errors.resources?.[index]?.url && (
+                      <p className="mt-1 text-sm text-red-600">{errors.resources[index].url.message}</p>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>Type</label>
@@ -563,6 +601,7 @@ export function EventFormPage() {
                     type="button"
                     onClick={() => removeSession(index)}
                     className="text-sm text-red-600 hover:text-red-800"
+                    aria-label={`Remove session ${index + 1}`}
                   >
                     Remove
                   </button>
@@ -576,6 +615,9 @@ export function EventFormPage() {
                       {...register(`sessions.${index}.title`)}
                       className={inputClass}
                     />
+                    {errors.sessions?.[index]?.title && (
+                      <p className="mt-1 text-sm text-red-600">{errors.sessions[index].title.message}</p>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>Start Time</label>
@@ -584,6 +626,9 @@ export function EventFormPage() {
                       {...register(`sessions.${index}.startAt`)}
                       className={inputClass}
                     />
+                    {errors.sessions?.[index]?.startAt && (
+                      <p className="mt-1 text-sm text-red-600">{errors.sessions[index].startAt.message}</p>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>End Time</label>
@@ -592,6 +637,9 @@ export function EventFormPage() {
                       {...register(`sessions.${index}.endAt`)}
                       className={inputClass}
                     />
+                    {errors.sessions?.[index]?.endAt && (
+                      <p className="mt-1 text-sm text-red-600">{errors.sessions[index].endAt.message}</p>
+                    )}
                   </div>
                   <div>
                     <label className={labelClass}>

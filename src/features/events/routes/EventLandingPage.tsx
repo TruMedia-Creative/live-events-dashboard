@@ -4,7 +4,7 @@ import { getEventBySlug } from "../../../lib/api/mock";
 import { useTenant } from "../../tenants";
 import type { EventData, StreamConfig, Speaker, EventResource, Session } from "../model";
 import { LoadingSpinner } from "../../../components/ui";
-import { isAllowedStreamUrl } from "../utils/streamUrl";
+import { isAllowedStreamUrl, isHttpsUrl } from "../utils/streamUrl";
 
 function formatEventDate(startAt: string, endAt: string, timezone: string): string {
   const start = new Date(startAt);
@@ -214,7 +214,7 @@ export default function EventLandingPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Event Banner */}
-      {event.bannerUrl && (
+      {event.bannerUrl && isHttpsUrl(event.bannerUrl) && (
         <div className="mb-8 overflow-hidden rounded-lg shadow-lg">
           <img
             src={event.bannerUrl}
@@ -278,8 +278,8 @@ export default function EventLandingPage() {
         <section className="mb-10">
           <h2 className="mb-4 text-xl font-semibold text-gray-900">Speakers</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {event.speakers.map((speaker, index) => (
-              <SpeakerCard key={`${speaker.name}-${index}`} speaker={speaker} />
+            {event.speakers.map((speaker) => (
+              <SpeakerCard key={speaker.id} speaker={speaker} />
             ))}
           </div>
         </section>
