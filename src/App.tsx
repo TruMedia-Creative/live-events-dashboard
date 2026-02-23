@@ -9,6 +9,7 @@ import {
   EventLandingPage,
 } from "./features/events/routes";
 import { AdminDashboardPage } from "./features/admin/routes";
+import { SettingsPage } from "./features/settings/routes";
 
 function TenantGate({ children }: { children: React.ReactNode }) {
   const { loading, tenant } = useTenant();
@@ -45,6 +46,7 @@ function TenantRoutes() {
           <Route path="events/new" element={<EventFormPage />} />
           <Route path="events/:eventId/edit" element={<EventFormPage />} />
           <Route path="admin" element={<AdminDashboardPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
 
         {/* Public event pages */}
