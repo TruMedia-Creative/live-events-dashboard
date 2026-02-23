@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { useTenant } from "../../features/tenants";
+import { hasAccessibleContrast } from "../../lib/colorContrast";
 
 type AppTheme = "light" | "dark";
 
@@ -9,6 +10,14 @@ export interface AppShellOutletContext {
   accentColor: string;
   setTheme: (theme: AppTheme) => void;
   setAccentColor: (color: string) => void;
+}
+
+function persistSetting(key: string, value: string) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    return;
+  }
 }
 
 export function AppShell() {
@@ -23,11 +32,11 @@ export function AppShell() {
   });
 
   useEffect(() => {
-    window.localStorage.setItem("app.theme", theme);
+    persistSetting("app.theme", theme);
   }, [theme]);
 
   useEffect(() => {
-    window.localStorage.setItem("app.accentColor", accentColor);
+    persistSetting("app.accentColor", accentColor);
   }, [accentColor]);
 
   const isDark = theme === "dark";
@@ -40,6 +49,13 @@ export function AppShell() {
   const linkClasses = isDark
     ? "text-sm font-medium text-gray-300 hover:text-white"
     : "text-sm font-medium text-gray-600 hover:text-gray-900";
+  const shellBackgroundHex = isDark ? "#111827" : "#F9FAFB";
+  const brandTextColor = hasAccessibleContrast(
+    accentColor,
+    shellBackgroundHex,
+  )
+    ? accentColor
+    : undefined;
 
   return (
     <div className={shellClasses}>
@@ -54,7 +70,7 @@ export function AppShell() {
                   className="h-8"
                 />
               ) : (
-                <span className="text-xl font-bold" style={{ color: accentColor }}>
+                <span className="text-xl font-bold" style={{ color: brandTextColor }}>
                   {tenant?.name ?? "ShowPro"}
                 </span>
               )}
