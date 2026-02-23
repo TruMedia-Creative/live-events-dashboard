@@ -258,7 +258,7 @@ export default function EventLandingPage() {
       )}
 
       {/* Sessions / Schedule */}
-      {event.sessions.length > 0 && (
+      {event.sessions?.length > 0 && (
         <section className="mb-10">
           <h2 className="mb-4 text-xl font-semibold text-gray-900">Schedule</h2>
           <div className="space-y-3">
