@@ -9,7 +9,7 @@ const ALLOWED_STREAM_HOSTS = [
 export function isAllowedStreamUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+    if (parsed.protocol !== "https:") {
       return false;
     }
     return ALLOWED_STREAM_HOSTS.includes(parsed.hostname);

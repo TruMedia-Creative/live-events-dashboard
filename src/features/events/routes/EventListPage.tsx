@@ -36,6 +36,10 @@ export function EventListPage() {
   }, [tenant, refreshKey]);
 
   const handleDelete = async (id: string) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event? This action cannot be undone."
+    );
+    if (!confirmed) return;
     await deleteEvent(id);
     setRefreshKey((k) => k + 1);
   };
@@ -109,9 +113,12 @@ export function EventListPage() {
                         <Link
                           to={`/e/${event.slug}`}
                           className="text-gray-400 hover:text-indigo-600"
-                          title="View public page"
+                          aria-label={`View public page for ${event.title}`}
                         >
-                          🔗
+                          <span aria-hidden="true">🔗</span>
+                          <span className="sr-only">
+                            View public page for {event.title}
+                          </span>
                         </Link>
                       )}
                       <Link

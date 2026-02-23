@@ -41,20 +41,37 @@ export function AdminDashboardPage() {
     };
   }, [refreshKey]);
 
+  const [actionError, setActionError] = useState<string | null>(null);
+
   const handlePublish = async (id: string) => {
-    await updateEvent(id, { status: "published" });
-    setRefreshKey((k) => k + 1);
+    try {
+      setActionError(null);
+      await updateEvent(id, { status: "published" });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Failed to publish event");
+    }
   };
 
   const handleArchive = async (id: string) => {
-    await updateEvent(id, { status: "archived" });
-    setRefreshKey((k) => k + 1);
+    try {
+      setActionError(null);
+      await updateEvent(id, { status: "archived" });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Failed to archive event");
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this event?")) return;
-    await deleteEvent(id);
-    setRefreshKey((k) => k + 1);
+    try {
+      setActionError(null);
+      await deleteEvent(id);
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Failed to delete event");
+    }
   };
 
   const tenantName = (tenantId: string) =>
@@ -69,6 +86,12 @@ export function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+
+      {actionError && (
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {actionError}
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

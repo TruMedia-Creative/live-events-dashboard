@@ -23,7 +23,16 @@ function slugify(text: string): string {
   return text
     .toLowerCase()
     .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/** Convert an ISO 8601 timestamp to `YYYY-MM-DDTHH:mm` for datetime-local inputs */
+function toDatetimeLocal(iso: string): string {
+  if (!iso) return "";
+  // Strip the trailing "Z" or timezone offset and keep first 16 chars (YYYY-MM-DDTHH:mm)
+  return iso.replace("Z", "").slice(0, 16);
 }
 
 const DEFAULT_VALUES: CreateEventInput = {
@@ -69,8 +78,8 @@ export function EventFormPage() {
           title: event.title,
           slug: event.slug,
           status: event.status,
-          startAt: event.startAt,
-          endAt: event.endAt,
+          startAt: toDatetimeLocal(event.startAt),
+          endAt: toDatetimeLocal(event.endAt),
           timezone: event.timezone,
           venue: event.venue,
           description: event.description,
@@ -99,8 +108,14 @@ export function EventFormPage() {
   const onSubmit = async (formData: CreateEventInput) => {
     setSubmitError(null);
 
+    // Strip stream config when provider is "None" (empty string)
+    const dataToValidate = {
+      ...formData,
+      stream: formData.stream?.provider ? formData.stream : undefined,
+    };
+
     // Validate with Zod schema manually to handle zod/v4 compat
-    const result = createEventSchema.safeParse(formData);
+    const result = createEventSchema.safeParse(dataToValidate);
     if (!result.success) {
       for (const issue of result.error.issues) {
         const path = issue.path.join(".") as Parameters<typeof setError>[0];

@@ -11,8 +11,26 @@ import {
 import { AdminDashboardPage } from "./features/admin/routes";
 
 function TenantGate({ children }: { children: React.ReactNode }) {
-  const { loading } = useTenant();
+  const { loading, tenant } = useTenant();
+
   if (loading) return <LoadingSpinner />;
+
+  if (!tenant) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="max-w-md text-center">
+          <h1 className="mb-2 text-xl font-semibold text-gray-900">
+            Tenant not found
+          </h1>
+          <p className="text-sm text-gray-500">
+            We could not load this workspace. Please check the URL or contact
+            your ShowPro administrator.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return <>{children}</>;
 }
 

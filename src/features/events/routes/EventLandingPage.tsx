@@ -172,7 +172,7 @@ export default function EventLandingPage() {
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">Event not found</h1>
           <p className="mt-2 text-gray-600">
-            The event you're looking for doesn't exist or has been removed.
+            The event you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
         </div>
       </div>
@@ -217,8 +217,8 @@ export default function EventLandingPage() {
         <section className="mb-10">
           <h2 className="mb-4 text-xl font-semibold text-gray-900">Speakers</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {event.speakers.map((speaker) => (
-              <SpeakerCard key={speaker.name} speaker={speaker} />
+            {event.speakers.map((speaker, index) => (
+              <SpeakerCard key={`${speaker.name}-${index}`} speaker={speaker} />
             ))}
           </div>
         </section>

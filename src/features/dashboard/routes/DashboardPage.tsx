@@ -18,10 +18,23 @@ export function DashboardPage() {
 
   useEffect(() => {
     if (!tenant) return;
-    getEvents(tenant.id).then((data) => {
-      setEvents(data);
-      setLoading(false);
-    });
+
+    let cancelled = false;
+
+    getEvents(tenant.id)
+      .then((data) => {
+        if (cancelled) return;
+        setEvents(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [tenant]);
 
   if (tenantLoading || loading) return <LoadingSpinner />;

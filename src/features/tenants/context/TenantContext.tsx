@@ -38,6 +38,6 @@ export function TenantProvider({
   }, [slug]);
 
   return (
-    <TenantContext value={{ tenant, loading }}>{children}</TenantContext>
+    <TenantContext.Provider value={{ tenant, loading }}>{children}</TenantContext.Provider>
   );
 }
