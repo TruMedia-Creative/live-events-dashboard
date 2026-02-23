@@ -2,7 +2,7 @@ import type { EventData } from "../../../features/events/model";
 import type { CreateEventInput } from "../../../features/events/model";
 import { mockEvents } from "./data";
 
-let events: EventData[] = [...mockEvents];
+const events: EventData[] = [...mockEvents];
 
 function delay(ms = 100): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

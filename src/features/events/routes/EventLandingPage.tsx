@@ -4,26 +4,7 @@ import { getEventBySlug } from "../../../lib/api/mock";
 import { useTenant } from "../../tenants";
 import type { EventData, StreamConfig, Speaker, EventResource } from "../model";
 import { LoadingSpinner } from "../../../components/ui";
-
-const ALLOWED_STREAM_HOSTS = [
-  "youtube.com",
-  "www.youtube.com",
-  "youtu.be",
-  "player.vimeo.com",
-  "vimeo.com",
-];
-
-export function isAllowedStreamUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-      return false;
-    }
-    return ALLOWED_STREAM_HOSTS.includes(parsed.hostname);
-  } catch {
-    return false;
-  }
-}
+import { isAllowedStreamUrl } from "../utils/streamUrl";
 
 function formatEventDate(startAt: string, endAt: string, timezone: string): string {
   const start = new Date(startAt);
@@ -147,22 +128,39 @@ export default function EventLandingPage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (tenantLoading || !tenant) return;
-    if (!eventSlug) {
-      setNotFound(true);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
+    if (tenantLoading || !tenant || !eventSlug) return;
+
+    let cancelled = false;
+
     getEventBySlug(tenant.id, eventSlug).then((data) => {
+      if (cancelled) return;
       if (data) {
         setEvent(data);
+        setNotFound(false);
       } else {
+        setEvent(null);
         setNotFound(true);
       }
       setLoading(false);
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [tenant, tenantLoading, eventSlug]);
+
+  if (!eventSlug) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900">Event not found</h1>
+          <p className="mt-2 text-gray-600">
+            The event you&apos;re looking for doesn&apos;t exist or has been removed.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading || tenantLoading) {
     return <LoadingSpinner />;

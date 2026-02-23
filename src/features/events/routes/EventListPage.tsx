@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useTenant } from "../../tenants/context/TenantContext";
+import { useTenant } from "../../tenants";
 import { getEvents, deleteEvent } from "../../../lib/api/mock/events";
 import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
 import type { EventData, EventStatus } from "../model/types";
@@ -20,22 +20,24 @@ export function EventListPage() {
   const { tenant, loading: tenantLoading } = useTenant();
   const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const loadEvents = useCallback(async () => {
-    if (!tenant) return;
-    setLoading(true);
-    const data = await getEvents(tenant.id);
-    setEvents(data);
-    setLoading(false);
-  }, [tenant]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    loadEvents();
-  }, [loadEvents]);
+    if (!tenant) return;
+    let cancelled = false;
+    getEvents(tenant.id).then((data) => {
+      if (cancelled) return;
+      setEvents(data);
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [tenant, refreshKey]);
 
   const handleDelete = async (id: string) => {
     await deleteEvent(id);
-    await loadEvents();
+    setRefreshKey((k) => k + 1);
   };
 
   if (tenantLoading || loading) return <LoadingSpinner />;

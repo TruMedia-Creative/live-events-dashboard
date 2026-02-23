@@ -1,22 +1,14 @@
 import {
-  createContext,
-  useContext,
   useEffect,
   useState,
   type ReactNode,
 } from "react";
 import type { Tenant } from "../model";
 import { getTenantBySlug } from "../../../lib/api/mock";
+import { TenantContext } from "./tenantContextValue";
 
-interface TenantContextValue {
-  tenant: Tenant | null;
-  loading: boolean;
-}
-
-const TenantContext = createContext<TenantContextValue>({
-  tenant: null,
-  loading: true,
-});
+export type { TenantContextValue } from "./tenantContextValue";
+export { TenantContext } from "./tenantContextValue";
 
 function resolveSlugFromHostname(): string | null {
   const hostname = window.location.hostname;
@@ -48,8 +40,4 @@ export function TenantProvider({
   return (
     <TenantContext value={{ tenant, loading }}>{children}</TenantContext>
   );
-}
-
-export function useTenant(): TenantContextValue {
-  return useContext(TenantContext);
 }

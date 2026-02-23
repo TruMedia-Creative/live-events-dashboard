@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   getEvents,
   getTenants,
@@ -19,56 +19,46 @@ export function AdminDashboardPage() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const loadedTenants = await getTenants();
-      const allEvents = (
-        await Promise.all(loadedTenants.map((t) => getEvents(t.id)))
-      ).flat();
-      setTenants(loadedTenants);
-      setEvents(allEvents);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    let cancelled = false;
+    getTenants()
+      .then(async (loadedTenants) => {
+        const allEvents = (
+          await Promise.all(loadedTenants.map((t) => getEvents(t.id)))
+        ).flat();
+        if (cancelled) return;
+        setTenants(loadedTenants);
+        setEvents(allEvents);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshKey]);
 
-  const handlePublish = useCallback(
-    async (id: string) => {
-      await updateEvent(id, { status: "published" });
-      await loadData();
-    },
-    [loadData],
-  );
+  const handlePublish = async (id: string) => {
+    await updateEvent(id, { status: "published" });
+    setRefreshKey((k) => k + 1);
+  };
 
-  const handleArchive = useCallback(
-    async (id: string) => {
-      await updateEvent(id, { status: "archived" });
-      await loadData();
-    },
-    [loadData],
-  );
+  const handleArchive = async (id: string) => {
+    await updateEvent(id, { status: "archived" });
+    setRefreshKey((k) => k + 1);
+  };
 
-  const handleDelete = useCallback(
-    async (id: string) => {
-      if (!window.confirm("Are you sure you want to delete this event?"))
-        return;
-      await deleteEvent(id);
-      await loadData();
-    },
-    [loadData],
-  );
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this event?")) return;
+    await deleteEvent(id);
+    setRefreshKey((k) => k + 1);
+  };
 
-  const tenantName = useCallback(
-    (tenantId: string) =>
-      tenants.find((t) => t.id === tenantId)?.name ?? tenantId,
-    [tenants],
-  );
+  const tenantName = (tenantId: string) =>
+    tenants.find((t) => t.id === tenantId)?.name ?? tenantId;
 
   if (loading) return <LoadingSpinner />;
 

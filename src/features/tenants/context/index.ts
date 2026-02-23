@@ -1,1 +1,2 @@
-export { TenantProvider, useTenant } from "./TenantContext";
+export { TenantProvider } from "./TenantContext";
+export { useTenant } from "./useTenant";
