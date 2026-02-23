@@ -13,11 +13,10 @@
         if (params.has('p')) {
           var path = params.get('p') || '/';
           var hash = params.get('h') || '';
-          window.history.replaceState(
-            null,
-            null,
-            '/live-events-dashboard' + path + hash
-          );
+          // BASE_URL is replaced at build time by Vite with the configured base
+          // (e.g. '/live-events-dashboard/'), strip trailing slash for joining.
+          var base = '%BASE_URL%'.replace(/\/$/, '');
+          window.history.replaceState(null, null, base + path + hash);
         }
       })();
     </script>
