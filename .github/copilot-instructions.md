@@ -1,7 +1,7 @@
-# Copilot Instructions — ShowPro Event Web App
+# Copilot Instructions — Eventudio Event Web App
 
 ## Product context
-This is a multi-tenant event web app for AV production companies (ShowPro and future white-label tenants).
+This is a multi-tenant event web app for AV production companies (Eventudio and future white-label tenants).
 Core flow:
 1) Client signs in
 2) Client creates/edits an Event via a form
@@ -33,7 +33,7 @@ Core flow:
 
 ## Multi-tenant model (assume)
 - Tenant resolved by hostname or path prefix:
-  - hostname: {tenant}.showpro.local OR custom domain
+  - hostname: {tenant}.Eventudio.local OR custom domain
   - fallback: /t/:tenantSlug
 - All tenant-scoped API calls must include tenantId/tenantSlug
 - Branding is tenant-scoped (logo, colors, fonts, template selection)

@@ -30,7 +30,7 @@ export function TenantProvider({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const resolvedSlug = slug ?? resolveSlugFromHostname() ?? "showpro";
+    const resolvedSlug = slug ?? resolveSlugFromHostname() ?? "Eventudio";
     getTenantBySlug(resolvedSlug).then((t) => {
       setTenant(t ?? null);
       setLoading(false);

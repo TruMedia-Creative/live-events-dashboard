@@ -4,11 +4,11 @@ import type { EventData } from "../../../features/events/model";
 export const mockTenants: Tenant[] = [
   {
     id: "t-1",
-    slug: "showpro",
-    name: "ShowPro Productions",
-    domain: "showpro.live",
+    slug: "Eventudio",
+    name: "Eventudio Productions",
+    domain: "Eventudio.live",
     branding: {
-      logoUrl: "https://placehold.co/200x60?text=ShowPro",
+      logoUrl: "https://placehold.co/200x60?text=Eventudio",
       primaryColor: "#4F46E5",
       fontFamily: "Inter",
     },
@@ -29,7 +29,7 @@ export const mockEvents: EventData[] = [
   {
     id: "e-1",
     tenantId: "t-1",
-    title: "ShowPro Annual Conference 2025",
+    title: "Eventudio Annual Conference 2025",
     slug: "annual-conference-2025",
     status: "published",
     startAt: "2025-09-15T09:00:00Z",
@@ -38,7 +38,7 @@ export const mockEvents: EventData[] = [
     venue: "Javits Center, New York, NY",
     description:
       "Join us for a full day of keynotes, panels, and live demos showcasing the future of live event production.",
-    bannerUrl: "https://placehold.co/1200x400?text=ShowPro+Annual+Conference+2025",
+    bannerUrl: "https://placehold.co/1200x400?text=Eventudio+Annual+Conference+2025",
     stream: {
       provider: "youtube",
       embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
@@ -63,7 +63,7 @@ export const mockEvents: EventData[] = [
         id: "sp-1",
         name: "Alex Rivera",
         title: "CEO",
-        company: "ShowPro Productions",
+        company: "Eventudio Productions",
         headshotUrl: "https://placehold.co/150x150?text=AR",
         bio: "Pioneer in hybrid event technology with 15 years of experience in AV production.",
       },
@@ -111,7 +111,7 @@ export const mockEvents: EventData[] = [
     startAt: "2025-11-02T13:00:00Z",
     endAt: "2025-11-02T16:00:00Z",
     timezone: "America/Chicago",
-    venue: "ShowPro Studio, Austin, TX",
+    venue: "Eventudio Studio, Austin, TX",
     description:
       "A hands-on workshop covering multi-camera switching, virtual backgrounds, and audience engagement tools.",
     resources: [
@@ -127,7 +127,7 @@ export const mockEvents: EventData[] = [
         id: "sp-3",
         name: "Morgan Chen",
         title: "Lead Technical Director",
-        company: "ShowPro Productions",
+        company: "Eventudio Productions",
         bio: "Award-winning TD known for flawless live-switched broadcasts.",
       },
     ],

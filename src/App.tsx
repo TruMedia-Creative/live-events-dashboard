@@ -25,7 +25,7 @@ function TenantGate({ children }: { children: React.ReactNode }) {
           </h1>
           <p className="text-sm text-gray-500">
             We could not load this workspace. Please check the URL or contact
-            your ShowPro administrator.
+            your Eventudio administrator.
           </p>
         </div>
       </div>

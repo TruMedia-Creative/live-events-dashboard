@@ -2,7 +2,7 @@
 
 ## Tenant Resolution
 Tenant is resolved from:
-1) Hostname subdomain: {tenant}.showpro.local
+1) Hostname subdomain: {tenant}.Eventudio.local
 2) Fallback: /t/:tenantSlug
 
 Resolved tenant is stored in a TenantContext and used for:
