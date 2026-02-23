@@ -24,6 +24,15 @@ export const speakerSchema = z.object({
   bio: z.string().optional(),
 });
 
+export const sessionSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1),
+  startAt: z.string().min(1),
+  endAt: z.string().min(1),
+  description: z.string().optional(),
+  speakerName: z.string().optional(),
+});
+
 export const createEventSchema = z.object({
   title: z.string().min(1),
   slug: z.string().min(1),
@@ -31,11 +40,13 @@ export const createEventSchema = z.object({
   startAt: z.string().min(1),
   endAt: z.string().min(1),
   timezone: z.string().min(1),
-  venue: z.string().min(1),
+  venue: z.string().optional(),
   description: z.string().min(1),
+  bannerUrl: z.url().optional(),
   stream: streamConfigSchema.optional(),
   resources: eventResourceSchema.array(),
   speakers: speakerSchema.array(),
+  sessions: sessionSchema.array(),
 });
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;

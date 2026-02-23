@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { useTenant } from "../../tenants";
 import {
   getEventById,
@@ -44,9 +44,15 @@ const DEFAULT_VALUES: CreateEventInput = {
   timezone: "America/New_York",
   venue: "",
   description: "",
+  bannerUrl: "",
   resources: [],
   speakers: [],
+  sessions: [],
 };
+
+const inputClass =
+  "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm";
+const labelClass = "block text-sm font-medium text-gray-700";
 
 export function EventFormPage() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -64,8 +70,27 @@ export function EventFormPage() {
     setValue,
     reset,
     setError,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CreateEventInput>({ defaultValues: DEFAULT_VALUES });
+
+  const {
+    fields: speakerFields,
+    append: appendSpeaker,
+    remove: removeSpeaker,
+  } = useFieldArray({ control, name: "speakers" });
+
+  const {
+    fields: resourceFields,
+    append: appendResource,
+    remove: removeResource,
+  } = useFieldArray({ control, name: "resources" });
+
+  const {
+    fields: sessionFields,
+    append: appendSession,
+    remove: removeSession,
+  } = useFieldArray({ control, name: "sessions" });
 
   // Load existing event for editing
   useEffect(() => {
@@ -81,11 +106,17 @@ export function EventFormPage() {
           startAt: toDatetimeLocal(event.startAt),
           endAt: toDatetimeLocal(event.endAt),
           timezone: event.timezone,
-          venue: event.venue,
+          venue: event.venue ?? "",
           description: event.description,
+          bannerUrl: event.bannerUrl ?? "",
           stream: event.stream,
           resources: event.resources,
           speakers: event.speakers,
+          sessions: event.sessions.map((s) => ({
+            ...s,
+            startAt: toDatetimeLocal(s.startAt),
+            endAt: toDatetimeLocal(s.endAt),
+          })),
         });
       }
       setLoadingEvent(false);
@@ -108,9 +139,11 @@ export function EventFormPage() {
   const onSubmit = async (formData: CreateEventInput) => {
     setSubmitError(null);
 
-    // Strip stream config when provider is "None" (empty string)
+    // Strip empty optional fields and stream config when provider is "None"
     const dataToValidate = {
       ...formData,
+      venue: formData.venue || undefined,
+      bannerUrl: formData.bannerUrl || undefined,
       stream: formData.stream?.provider ? formData.stream : undefined,
     };
 
@@ -165,28 +198,28 @@ export function EventFormPage() {
         {/* Title & Slug */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="title" className={labelClass}>
               Title
             </label>
             <input
               id="title"
               type="text"
               {...register("title")}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className={inputClass}
             />
             {errors.title && (
               <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
             )}
           </div>
           <div>
-            <label htmlFor="slug" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="slug" className={labelClass}>
               Slug
             </label>
             <input
               id="slug"
               type="text"
               {...register("slug")}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className={inputClass}
             />
             {errors.slug && (
               <p className="mt-1 text-sm text-red-600">{errors.slug.message}</p>
@@ -196,13 +229,13 @@ export function EventFormPage() {
 
         {/* Status */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="status" className={labelClass}>
             Status
           </label>
           <select
             id="status"
             {...register("status")}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className={inputClass}
           >
             <option value="draft">Draft</option>
             <option value="published">Published</option>
@@ -216,41 +249,41 @@ export function EventFormPage() {
         {/* Dates & Timezone */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
-            <label htmlFor="startAt" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="startAt" className={labelClass}>
               Start Date/Time
             </label>
             <input
               id="startAt"
               type="datetime-local"
               {...register("startAt")}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className={inputClass}
             />
             {errors.startAt && (
               <p className="mt-1 text-sm text-red-600">{errors.startAt.message}</p>
             )}
           </div>
           <div>
-            <label htmlFor="endAt" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="endAt" className={labelClass}>
               End Date/Time
             </label>
             <input
               id="endAt"
               type="datetime-local"
               {...register("endAt")}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className={inputClass}
             />
             {errors.endAt && (
               <p className="mt-1 text-sm text-red-600">{errors.endAt.message}</p>
             )}
           </div>
           <div>
-            <label htmlFor="timezone" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="timezone" className={labelClass}>
               Timezone
             </label>
             <select
               id="timezone"
               {...register("timezone")}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className={inputClass}
             >
               {TIMEZONES.map((tz) => (
                 <option key={tz.value} value={tz.value}>
@@ -264,16 +297,17 @@ export function EventFormPage() {
           </div>
         </div>
 
-        {/* Venue */}
+        {/* Venue (optional) */}
         <div>
-          <label htmlFor="venue" className="block text-sm font-medium text-gray-700">
-            Venue
+          <label htmlFor="venue" className={labelClass}>
+            Venue <span className="text-gray-400">(optional)</span>
           </label>
           <input
             id="venue"
             type="text"
+            placeholder="e.g. Javits Center, New York, NY"
             {...register("venue")}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className={inputClass}
           />
           {errors.venue && (
             <p className="mt-1 text-sm text-red-600">{errors.venue.message}</p>
@@ -282,17 +316,34 @@ export function EventFormPage() {
 
         {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="description" className={labelClass}>
             Description
           </label>
           <textarea
             id="description"
             rows={4}
             {...register("description")}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className={inputClass}
           />
           {errors.description && (
             <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+          )}
+        </div>
+
+        {/* Banner URL */}
+        <div>
+          <label htmlFor="bannerUrl" className={labelClass}>
+            Event Banner URL <span className="text-gray-400">(optional — jpeg, png, etc.)</span>
+          </label>
+          <input
+            id="bannerUrl"
+            type="url"
+            placeholder="https://example.com/banner.jpg"
+            {...register("bannerUrl")}
+            className={inputClass}
+          />
+          {errors.bannerUrl && (
+            <p className="mt-1 text-sm text-red-600">{errors.bannerUrl.message}</p>
           )}
         </div>
 
@@ -303,13 +354,13 @@ export function EventFormPage() {
           </legend>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="stream-provider" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="stream-provider" className={labelClass}>
                 Provider
               </label>
               <select
                 id="stream-provider"
                 {...register("stream.provider")}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className={inputClass}
               >
                 <option value="">None</option>
                 <option value="youtube">YouTube</option>
@@ -319,14 +370,14 @@ export function EventFormPage() {
             </div>
             {streamProvider && (
               <div>
-                <label htmlFor="stream-embed-url" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="stream-embed-url" className={labelClass}>
                   Embed URL
                 </label>
                 <input
                   id="stream-embed-url"
                   type="url"
                   {...register("stream.embedUrl")}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className={inputClass}
                 />
                 {errors.stream?.embedUrl && (
                   <p className="mt-1 text-sm text-red-600">
@@ -335,6 +386,255 @@ export function EventFormPage() {
                 )}
               </div>
             )}
+          </div>
+        </fieldset>
+
+        {/* Speakers */}
+        <fieldset className="rounded-md border border-gray-200 p-4">
+          <legend className="px-2 text-sm font-medium text-gray-700">
+            Keynote Speakers
+          </legend>
+          <div className="space-y-4">
+            {speakerFields.map((field, index) => (
+              <div
+                key={field.id}
+                className="rounded-md border border-gray-100 bg-gray-50 p-4"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">
+                    Speaker {index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeSpeaker(index)}
+                    className="text-sm text-red-600 hover:text-red-800"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className={labelClass}>Name</label>
+                    <input
+                      type="text"
+                      {...register(`speakers.${index}.name`)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Title / Role</label>
+                    <input
+                      type="text"
+                      {...register(`speakers.${index}.title`)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Company</label>
+                    <input
+                      type="text"
+                      {...register(`speakers.${index}.company`)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>
+                      Photo URL <span className="text-gray-400">(optional)</span>
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://example.com/photo.jpg"
+                      {...register(`speakers.${index}.headshotUrl`)}
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <label className={labelClass}>
+                    Bio <span className="text-gray-400">(optional)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    {...register(`speakers.${index}.bio`)}
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                appendSpeaker({ name: "", title: "", company: "", headshotUrl: "", bio: "" })
+              }
+              className="rounded-md border border-dashed border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+            >
+              + Add Speaker
+            </button>
+          </div>
+        </fieldset>
+
+        {/* Resources / Supporting Files */}
+        <fieldset className="rounded-md border border-gray-200 p-4">
+          <legend className="px-2 text-sm font-medium text-gray-700">
+            Supporting Files &amp; Resources
+          </legend>
+          <div className="space-y-4">
+            {resourceFields.map((field, index) => (
+              <div
+                key={field.id}
+                className="rounded-md border border-gray-100 bg-gray-50 p-4"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">
+                    Resource {index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeResource(index)}
+                    className="text-sm text-red-600 hover:text-red-800"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div>
+                    <label className={labelClass}>Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Slide Deck"
+                      {...register(`resources.${index}.name`)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>File URL</label>
+                    <input
+                      type="url"
+                      placeholder="https://example.com/slides.pdf"
+                      {...register(`resources.${index}.url`)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Type</label>
+                    <select
+                      {...register(`resources.${index}.type`)}
+                      className={inputClass}
+                    >
+                      <option value="pdf">PDF</option>
+                      <option value="presentation">Presentation</option>
+                      <option value="image">Image</option>
+                      <option value="video">Video</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+                <input type="hidden" {...register(`resources.${index}.id`)} />
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                appendResource({ id: crypto.randomUUID(), name: "", url: "", type: "pdf" })
+              }
+              className="rounded-md border border-dashed border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+            >
+              + Add Resource
+            </button>
+          </div>
+        </fieldset>
+
+        {/* Sessions */}
+        <fieldset className="rounded-md border border-gray-200 p-4">
+          <legend className="px-2 text-sm font-medium text-gray-700">
+            Sessions / Schedule
+          </legend>
+          <div className="space-y-4">
+            {sessionFields.map((field, index) => (
+              <div
+                key={field.id}
+                className="rounded-md border border-gray-100 bg-gray-50 p-4"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">
+                    Session {index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeSession(index)}
+                    className="text-sm text-red-600 hover:text-red-800"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>Session Title</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Opening Keynote"
+                      {...register(`sessions.${index}.title`)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Start Time</label>
+                    <input
+                      type="datetime-local"
+                      {...register(`sessions.${index}.startAt`)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>End Time</label>
+                    <input
+                      type="datetime-local"
+                      {...register(`sessions.${index}.endAt`)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>
+                      Speaker <span className="text-gray-400">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Speaker name"
+                      {...register(`sessions.${index}.speakerName`)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>
+                      Description <span className="text-gray-400">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Brief session description"
+                      {...register(`sessions.${index}.description`)}
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+                <input type="hidden" {...register(`sessions.${index}.id`)} />
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                appendSession({
+                  id: crypto.randomUUID(),
+                  title: "",
+                  startAt: "",
+                  endAt: "",
+                  description: "",
+                  speakerName: "",
+                })
+              }
+              className="rounded-md border border-dashed border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+            >
+              + Add Session
+            </button>
           </div>
         </fieldset>
 

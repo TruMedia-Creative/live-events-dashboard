@@ -23,6 +23,15 @@ export interface Speaker {
   bio?: string;
 }
 
+export interface Session {
+  id: string;
+  title: string;
+  startAt: string;
+  endAt: string;
+  description?: string;
+  speakerName?: string;
+}
+
 export interface EventData {
   id: string;
   tenantId: string;
@@ -32,9 +41,11 @@ export interface EventData {
   startAt: string;
   endAt: string;
   timezone: string;
-  venue: string;
+  venue?: string;
   description: string;
+  bannerUrl?: string;
   stream?: StreamConfig;
   resources: EventResource[];
   speakers: Speaker[];
+  sessions: Session[];
 }

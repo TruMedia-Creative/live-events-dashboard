@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getEventBySlug } from "../../../lib/api/mock";
 import { useTenant } from "../../tenants";
-import type { EventData, StreamConfig, Speaker, EventResource } from "../model";
+import type { EventData, StreamConfig, Speaker, EventResource, Session } from "../model";
 import { LoadingSpinner } from "../../../components/ui";
 import { isAllowedStreamUrl } from "../utils/streamUrl";
 
@@ -25,6 +25,19 @@ function formatEventDate(startAt: string, endAt: string, timezone: string): stri
   const startTime = start.toLocaleTimeString("en-US", timeOpts);
   const endTime = end.toLocaleTimeString("en-US", timeOpts);
   return `${datePart} · ${startTime} – ${endTime}`;
+}
+
+function formatSessionTime(startAt: string, endAt: string, timezone: string): string {
+  const start = new Date(startAt);
+  const end = new Date(endAt);
+  const timeOpts: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: timezone,
+  };
+  const startTime = start.toLocaleTimeString("en-US", timeOpts);
+  const endTime = end.toLocaleTimeString("en-US", timeOpts);
+  return `${startTime} – ${endTime}`;
 }
 
 function StatusBadge({ isLive }: { isLive: boolean }) {
@@ -120,6 +133,25 @@ function ResourceItem({ resource }: { resource: EventResource }) {
   );
 }
 
+function SessionItem({ session, timezone }: { session: Session; timezone: string }) {
+  return (
+    <div className="flex gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="shrink-0 text-sm font-medium text-indigo-600">
+        {formatSessionTime(session.startAt, session.endAt, timezone)}
+      </div>
+      <div className="min-w-0">
+        <h3 className="font-semibold text-gray-900">{session.title}</h3>
+        {session.speakerName && (
+          <p className="text-sm text-gray-600">{session.speakerName}</p>
+        )}
+        {session.description && (
+          <p className="mt-1 text-sm text-gray-500">{session.description}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function EventLandingPage() {
   const { eventSlug } = useParams<{ eventSlug: string }>();
   const { tenant, loading: tenantLoading } = useTenant();
@@ -181,6 +213,17 @@ export default function EventLandingPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Event Banner */}
+      {event.bannerUrl && (
+        <div className="mb-8 overflow-hidden rounded-lg shadow-lg">
+          <img
+            src={event.bannerUrl}
+            alt={`${event.title} banner`}
+            className="h-auto w-full object-cover"
+          />
+        </div>
+      )}
+
       {/* Event Header */}
       <header className="mb-8">
         <div className="flex flex-wrap items-start gap-3">
@@ -191,7 +234,9 @@ export default function EventLandingPage() {
         </div>
         <div className="mt-3 space-y-1 text-gray-600">
           <p>{formatEventDate(event.startAt, event.endAt, event.timezone)}</p>
-          <p>{event.venue} · {event.timezone}</p>
+          <p>
+            {event.venue ? `${event.venue} · ` : ""}{event.timezone}
+          </p>
         </div>
       </header>
 
@@ -209,6 +254,22 @@ export default function EventLandingPage() {
           <p className="whitespace-pre-line leading-relaxed text-gray-700">
             {event.description}
           </p>
+        </section>
+      )}
+
+      {/* Sessions / Schedule */}
+      {event.sessions.length > 0 && (
+        <section className="mb-10">
+          <h2 className="mb-4 text-xl font-semibold text-gray-900">Schedule</h2>
+          <div className="space-y-3">
+            {event.sessions.map((session) => (
+              <SessionItem
+                key={session.id}
+                session={session}
+                timezone={event.timezone}
+              />
+            ))}
+          </div>
         </section>
       )}
 
