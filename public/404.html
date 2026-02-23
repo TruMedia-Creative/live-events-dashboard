@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Eventudio</title>
+    <script>
+      // Single-page app redirect for GitHub Pages.
+      // Encodes the current path/query/hash into a query string and redirects
+      // to index.html, which then restores the URL via the companion script.
+      var base = '/live-events-dashboard';
+      var path = window.location.pathname.slice(base.length);
+      var search = window.location.search;
+      var hash = window.location.hash;
+      var redirect =
+        base +
+        '/?p=' +
+        encodeURIComponent(path + search) +
+        (hash ? '&h=' + encodeURIComponent(hash) : '');
+      window.location.replace(redirect);
+    </script>
+  </head>
+  <body></body>
+</html>
