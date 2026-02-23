@@ -2,7 +2,27 @@ import type { EventData } from "../../../features/events/model";
 import type { CreateEventInput } from "../../../features/events/model";
 import { mockEvents } from "./data";
 
-const events: EventData[] = [...mockEvents];
+const STORAGE_KEY = "mock.events";
+
+function loadEvents(): EventData[] {
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored) return JSON.parse(stored) as EventData[];
+  } catch {
+    // ignore storage errors
+  }
+  return [...mockEvents];
+}
+
+function saveEvents(data: EventData[]): void {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {
+    // ignore storage errors
+  }
+}
+
+const events: EventData[] = loadEvents();
 
 function delay(ms = 100): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -39,6 +59,7 @@ export async function createEvent(
     tenantId,
   };
   events.push(event);
+  saveEvents(events);
   return event;
 }
 
@@ -52,6 +73,7 @@ export async function updateEvent(
     throw new Error(`Event not found: ${id}`);
   }
   events[index] = { ...events[index], ...data };
+  saveEvents(events);
   return events[index];
 }
 
@@ -62,4 +84,5 @@ export async function deleteEvent(id: string): Promise<void> {
     throw new Error(`Event not found: ${id}`);
   }
   events.splice(index, 1);
+  saveEvents(events);
 }

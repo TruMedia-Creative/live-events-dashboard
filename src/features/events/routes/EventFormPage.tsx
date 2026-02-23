@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useOutletContext } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useTenant } from "../../tenants";
 import {
@@ -9,6 +9,7 @@ import {
 } from "../../../lib/api/mock";
 import { createEventSchema, type CreateEventInput } from "../model";
 import type { EventData } from "../model";
+import type { AppShellOutletContext } from "../../../components/layout/AppShell";
 
 const TIMEZONES = [
   { value: "America/New_York", label: "Eastern (ET)" },
@@ -50,15 +51,22 @@ const DEFAULT_VALUES: CreateEventInput = {
   sessions: [],
 };
 
-const inputClass =
-  "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm";
-const labelClass = "block text-sm font-medium text-gray-700";
-
 export function EventFormPage() {
   const { eventId } = useParams<{ eventId: string }>();
   const isEditing = Boolean(eventId);
   const navigate = useNavigate();
   const { tenant, loading: tenantLoading } = useTenant();
+  const { theme } = useOutletContext<AppShellOutletContext>();
+  const isDark = theme === "dark";
+
+  const baseInputClass =
+    "mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm";
+  const labelClass = `block text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`;
+  const fieldInputClass = `${baseInputClass} ${isDark ? "border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-500" : "border-gray-300 bg-white text-gray-900"}`;
+  const fieldsetClass = `rounded-md border p-4 ${isDark ? "border-gray-700" : "border-gray-200"}`;
+  const legendClass = `px-2 text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`;
+  const subItemClass = `rounded-md border p-4 ${isDark ? "border-gray-600 bg-gray-700/50" : "border-gray-100 bg-gray-50"}`;
+  const subItemLabelClass = `text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`;
 
   const [loadingEvent, setLoadingEvent] = useState(isEditing);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -180,19 +188,19 @@ export function EventFormPage() {
   };
 
   if (tenantLoading || loadingEvent) {
-    return <p className="p-6 text-gray-500">Loading…</p>;
+    return <p className={`p-6 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Loading…</p>;
   }
 
   return (
     <div className="mx-auto max-w-3xl p-6">
       <Link
         to="/events"
-        className="text-sm text-indigo-600 hover:underline"
+        className="text-sm text-indigo-400 hover:underline"
       >
         ← Back to Events
       </Link>
 
-      <h1 className="mt-4 text-2xl font-bold text-gray-900">
+      <h1 className={`mt-4 text-2xl font-bold ${isDark ? "text-gray-100" : "text-gray-900"}`}>
         {isEditing ? "Edit Event" : "Create Event"}
       </h1>
 
@@ -215,10 +223,10 @@ export function EventFormPage() {
               id="title"
               type="text"
               {...register("title")}
-              className={inputClass}
+              className={fieldInputClass}
             />
             {errors.title && (
-              <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+              <p className="mt-1 text-sm text-red-500">{errors.title.message}</p>
             )}
           </div>
           <div>
@@ -229,10 +237,10 @@ export function EventFormPage() {
               id="slug"
               type="text"
               {...register("slug")}
-              className={inputClass}
+              className={fieldInputClass}
             />
             {errors.slug && (
-              <p className="mt-1 text-sm text-red-600">{errors.slug.message}</p>
+              <p className="mt-1 text-sm text-red-500">{errors.slug.message}</p>
             )}
           </div>
         </div>
@@ -245,14 +253,14 @@ export function EventFormPage() {
           <select
             id="status"
             {...register("status")}
-            className={inputClass}
+            className={fieldInputClass}
           >
             <option value="draft">Draft</option>
             <option value="published">Published</option>
             <option value="archived">Archived</option>
           </select>
           {errors.status && (
-            <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>
+            <p className="mt-1 text-sm text-red-500">{errors.status.message}</p>
           )}
         </div>
 
@@ -266,10 +274,10 @@ export function EventFormPage() {
               id="startAt"
               type="datetime-local"
               {...register("startAt")}
-              className={inputClass}
+              className={fieldInputClass}
             />
             {errors.startAt && (
-              <p className="mt-1 text-sm text-red-600">{errors.startAt.message}</p>
+              <p className="mt-1 text-sm text-red-500">{errors.startAt.message}</p>
             )}
           </div>
           <div>
@@ -280,10 +288,10 @@ export function EventFormPage() {
               id="endAt"
               type="datetime-local"
               {...register("endAt")}
-              className={inputClass}
+              className={fieldInputClass}
             />
             {errors.endAt && (
-              <p className="mt-1 text-sm text-red-600">{errors.endAt.message}</p>
+              <p className="mt-1 text-sm text-red-500">{errors.endAt.message}</p>
             )}
           </div>
           <div>
@@ -293,7 +301,7 @@ export function EventFormPage() {
             <select
               id="timezone"
               {...register("timezone")}
-              className={inputClass}
+              className={fieldInputClass}
             >
               {TIMEZONES.map((tz) => (
                 <option key={tz.value} value={tz.value}>
@@ -302,7 +310,7 @@ export function EventFormPage() {
               ))}
             </select>
             {errors.timezone && (
-              <p className="mt-1 text-sm text-red-600">{errors.timezone.message}</p>
+              <p className="mt-1 text-sm text-red-500">{errors.timezone.message}</p>
             )}
           </div>
         </div>
@@ -310,17 +318,17 @@ export function EventFormPage() {
         {/* Venue (optional) */}
         <div>
           <label htmlFor="venue" className={labelClass}>
-            Venue <span className="text-gray-400">(optional)</span>
+            Venue <span className={isDark ? "text-gray-500" : "text-gray-400"}>(optional)</span>
           </label>
           <input
             id="venue"
             type="text"
             placeholder="e.g. Javits Center, New York, NY"
             {...register("venue")}
-            className={inputClass}
+            className={fieldInputClass}
           />
           {errors.venue && (
-            <p className="mt-1 text-sm text-red-600">{errors.venue.message}</p>
+            <p className="mt-1 text-sm text-red-500">{errors.venue.message}</p>
           )}
         </div>
 
@@ -333,33 +341,33 @@ export function EventFormPage() {
             id="description"
             rows={4}
             {...register("description")}
-            className={inputClass}
+            className={fieldInputClass}
           />
           {errors.description && (
-            <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+            <p className="mt-1 text-sm text-red-500">{errors.description.message}</p>
           )}
         </div>
 
         {/* Banner URL */}
         <div>
           <label htmlFor="bannerUrl" className={labelClass}>
-            Event Banner URL <span className="text-gray-400">(optional — jpeg, png, etc.)</span>
+            Event Banner URL <span className={isDark ? "text-gray-500" : "text-gray-400"}>(optional — jpeg, png, etc.)</span>
           </label>
           <input
             id="bannerUrl"
             type="url"
             placeholder="https://example.com/banner.jpg"
             {...register("bannerUrl")}
-            className={inputClass}
+            className={fieldInputClass}
           />
           {errors.bannerUrl && (
-            <p className="mt-1 text-sm text-red-600">{errors.bannerUrl.message}</p>
+            <p className="mt-1 text-sm text-red-500">{errors.bannerUrl.message}</p>
           )}
         </div>
 
         {/* Stream Configuration */}
-        <fieldset className="rounded-md border border-gray-200 p-4">
-          <legend className="px-2 text-sm font-medium text-gray-700">
+        <fieldset className={fieldsetClass}>
+          <legend className={legendClass}>
             Stream (optional)
           </legend>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -370,7 +378,7 @@ export function EventFormPage() {
               <select
                 id="stream-provider"
                 {...register("stream.provider")}
-                className={inputClass}
+                className={fieldInputClass}
               >
                 <option value="">None</option>
                 <option value="youtube">YouTube</option>
@@ -387,10 +395,10 @@ export function EventFormPage() {
                   id="stream-embed-url"
                   type="url"
                   {...register("stream.embedUrl")}
-                  className={inputClass}
+                  className={fieldInputClass}
                 />
                 {errors.stream?.embedUrl && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-sm text-red-500">
                     {errors.stream.embedUrl.message}
                   </p>
                 )}
@@ -400,24 +408,24 @@ export function EventFormPage() {
         </fieldset>
 
         {/* Speakers */}
-        <fieldset className="rounded-md border border-gray-200 p-4">
-          <legend className="px-2 text-sm font-medium text-gray-700">
+        <fieldset className={fieldsetClass}>
+          <legend className={legendClass}>
             Keynote Speakers
           </legend>
           <div className="space-y-4">
             {speakerFields.map((field, index) => (
               <div
                 key={field.id}
-                className="rounded-md border border-gray-100 bg-gray-50 p-4"
+                className={subItemClass}
               >
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className={subItemLabelClass}>
                     Speaker {index + 1}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeSpeaker(index)}
-                    className="text-sm text-red-600 hover:text-red-800"
+                    className="text-sm text-red-500 hover:text-red-400"
                     aria-label={`Remove speaker ${index + 1}`}
                   >
                     Remove
@@ -429,10 +437,10 @@ export function EventFormPage() {
                     <input
                       type="text"
                       {...register(`speakers.${index}.name`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                     {errors.speakers?.[index]?.name && (
-                      <p className="mt-1 text-sm text-red-600">{errors.speakers[index].name.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.speakers[index].name.message}</p>
                     )}
                   </div>
                   <div>
@@ -440,10 +448,10 @@ export function EventFormPage() {
                     <input
                       type="text"
                       {...register(`speakers.${index}.title`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                     {errors.speakers?.[index]?.title && (
-                      <p className="mt-1 text-sm text-red-600">{errors.speakers[index].title.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.speakers[index].title.message}</p>
                     )}
                   </div>
                   <div>
@@ -451,35 +459,35 @@ export function EventFormPage() {
                     <input
                       type="text"
                       {...register(`speakers.${index}.company`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                     {errors.speakers?.[index]?.company && (
-                      <p className="mt-1 text-sm text-red-600">{errors.speakers[index].company.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.speakers[index].company.message}</p>
                     )}
                   </div>
                   <div>
                     <label className={labelClass}>
-                      Photo URL <span className="text-gray-400">(optional)</span>
+                      Photo URL <span className={isDark ? "text-gray-500" : "text-gray-400"}>(optional)</span>
                     </label>
                     <input
                       type="url"
                       placeholder="https://example.com/photo.jpg"
                       {...register(`speakers.${index}.headshotUrl`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                     {errors.speakers?.[index]?.headshotUrl && (
-                      <p className="mt-1 text-sm text-red-600">{errors.speakers[index].headshotUrl.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.speakers[index].headshotUrl.message}</p>
                     )}
                   </div>
                 </div>
                 <div className="mt-3">
                   <label className={labelClass}>
-                    Bio <span className="text-gray-400">(optional)</span>
+                    Bio <span className={isDark ? "text-gray-500" : "text-gray-400"}>(optional)</span>
                   </label>
                   <textarea
                     rows={2}
                     {...register(`speakers.${index}.bio`)}
-                    className={inputClass}
+                    className={fieldInputClass}
                   />
                 </div>
                 <input type="hidden" {...register(`speakers.${index}.id`)} />
@@ -497,7 +505,7 @@ export function EventFormPage() {
                   bio: "",
                 })
               }
-              className="rounded-md border border-dashed border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+              className={`rounded-md border border-dashed px-4 py-2 text-sm font-medium text-indigo-400 ${isDark ? "border-indigo-700 hover:bg-indigo-900/30" : "border-indigo-300 hover:bg-indigo-50"}`}
             >
               + Add Speaker
             </button>
@@ -505,24 +513,24 @@ export function EventFormPage() {
         </fieldset>
 
         {/* Resources / Supporting Files */}
-        <fieldset className="rounded-md border border-gray-200 p-4">
-          <legend className="px-2 text-sm font-medium text-gray-700">
+        <fieldset className={fieldsetClass}>
+          <legend className={legendClass}>
             Supporting Files &amp; Resources
           </legend>
           <div className="space-y-4">
             {resourceFields.map((field, index) => (
               <div
                 key={field.id}
-                className="rounded-md border border-gray-100 bg-gray-50 p-4"
+                className={subItemClass}
               >
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className={subItemLabelClass}>
                     Resource {index + 1}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeResource(index)}
-                    className="text-sm text-red-600 hover:text-red-800"
+                    className="text-sm text-red-500 hover:text-red-400"
                     aria-label={`Remove resource ${index + 1}`}
                   >
                     Remove
@@ -535,10 +543,10 @@ export function EventFormPage() {
                       type="text"
                       placeholder="e.g. Slide Deck"
                       {...register(`resources.${index}.name`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                     {errors.resources?.[index]?.name && (
-                      <p className="mt-1 text-sm text-red-600">{errors.resources[index].name.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.resources[index].name.message}</p>
                     )}
                   </div>
                   <div>
@@ -547,17 +555,17 @@ export function EventFormPage() {
                       type="url"
                       placeholder="https://example.com/slides.pdf"
                       {...register(`resources.${index}.url`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                     {errors.resources?.[index]?.url && (
-                      <p className="mt-1 text-sm text-red-600">{errors.resources[index].url.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.resources[index].url.message}</p>
                     )}
                   </div>
                   <div>
                     <label className={labelClass}>Type</label>
                     <select
                       {...register(`resources.${index}.type`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     >
                       <option value="pdf">PDF</option>
                       <option value="presentation">Presentation</option>
@@ -575,7 +583,7 @@ export function EventFormPage() {
               onClick={() =>
                 appendResource({ id: crypto.randomUUID(), name: "", url: "", type: "pdf" })
               }
-              className="rounded-md border border-dashed border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+              className={`rounded-md border border-dashed px-4 py-2 text-sm font-medium text-indigo-400 ${isDark ? "border-indigo-700 hover:bg-indigo-900/30" : "border-indigo-300 hover:bg-indigo-50"}`}
             >
               + Add Resource
             </button>
@@ -583,24 +591,24 @@ export function EventFormPage() {
         </fieldset>
 
         {/* Sessions */}
-        <fieldset className="rounded-md border border-gray-200 p-4">
-          <legend className="px-2 text-sm font-medium text-gray-700">
+        <fieldset className={fieldsetClass}>
+          <legend className={legendClass}>
             Sessions / Schedule
           </legend>
           <div className="space-y-4">
             {sessionFields.map((field, index) => (
               <div
                 key={field.id}
-                className="rounded-md border border-gray-100 bg-gray-50 p-4"
+                className={subItemClass}
               >
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className={subItemLabelClass}>
                     Session {index + 1}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeSession(index)}
-                    className="text-sm text-red-600 hover:text-red-800"
+                    className="text-sm text-red-500 hover:text-red-400"
                     aria-label={`Remove session ${index + 1}`}
                   >
                     Remove
@@ -613,10 +621,10 @@ export function EventFormPage() {
                       type="text"
                       placeholder="e.g. Opening Keynote"
                       {...register(`sessions.${index}.title`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                     {errors.sessions?.[index]?.title && (
-                      <p className="mt-1 text-sm text-red-600">{errors.sessions[index].title.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.sessions[index].title.message}</p>
                     )}
                   </div>
                   <div>
@@ -624,10 +632,10 @@ export function EventFormPage() {
                     <input
                       type="datetime-local"
                       {...register(`sessions.${index}.startAt`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                     {errors.sessions?.[index]?.startAt && (
-                      <p className="mt-1 text-sm text-red-600">{errors.sessions[index].startAt.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.sessions[index].startAt.message}</p>
                     )}
                   </div>
                   <div>
@@ -635,32 +643,32 @@ export function EventFormPage() {
                     <input
                       type="datetime-local"
                       {...register(`sessions.${index}.endAt`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                     {errors.sessions?.[index]?.endAt && (
-                      <p className="mt-1 text-sm text-red-600">{errors.sessions[index].endAt.message}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.sessions[index].endAt.message}</p>
                     )}
                   </div>
                   <div>
                     <label className={labelClass}>
-                      Speaker <span className="text-gray-400">(optional)</span>
+                      Speaker <span className={isDark ? "text-gray-500" : "text-gray-400"}>(optional)</span>
                     </label>
                     <input
                       type="text"
                       placeholder="Speaker name"
                       {...register(`sessions.${index}.speakerName`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                   </div>
                   <div>
                     <label className={labelClass}>
-                      Description <span className="text-gray-400">(optional)</span>
+                      Description <span className={isDark ? "text-gray-500" : "text-gray-400"}>(optional)</span>
                     </label>
                     <input
                       type="text"
                       placeholder="Brief session description"
                       {...register(`sessions.${index}.description`)}
-                      className={inputClass}
+                      className={fieldInputClass}
                     />
                   </div>
                 </div>
@@ -679,7 +687,7 @@ export function EventFormPage() {
                   speakerName: "",
                 })
               }
-              className="rounded-md border border-dashed border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+              className={`rounded-md border border-dashed px-4 py-2 text-sm font-medium text-indigo-400 ${isDark ? "border-indigo-700 hover:bg-indigo-900/30" : "border-indigo-300 hover:bg-indigo-50"}`}
             >
               + Add Session
             </button>
@@ -701,7 +709,7 @@ export function EventFormPage() {
           </button>
           <Link
             to="/events"
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className={`text-sm ${isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-700"}`}
           >
             Cancel
           </Link>

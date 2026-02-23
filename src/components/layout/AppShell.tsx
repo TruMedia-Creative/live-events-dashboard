@@ -71,7 +71,7 @@ export function AppShell() {
                 />
               ) : (
                 <span className="text-xl font-bold" style={{ color: brandTextColor }}>
-                  {tenant?.name ?? "ShowPro"}
+                  {tenant?.name ?? "Eventudio"}
                 </span>
               )}
             </div>
