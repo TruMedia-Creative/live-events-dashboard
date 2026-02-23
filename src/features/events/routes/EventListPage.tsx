@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { useTenant } from "../../tenants";
 import { getEvents, deleteEvent } from "../../../lib/api/mock/events";
 import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
 import type { EventData, EventStatus } from "../model/types";
+import type { AppShellOutletContext } from "../../../components/layout/AppShell";
 
 const STATUS_STYLES: Record<EventStatus, string> = {
   draft: "bg-yellow-100 text-yellow-800",
@@ -18,6 +19,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
 
 export function EventListPage() {
   const { tenant, loading: tenantLoading } = useTenant();
+  const { theme } = useOutletContext<AppShellOutletContext>();
+  const isDark = theme === "dark";
   const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -50,7 +53,7 @@ export function EventListPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Events</h1>
+        <h1 className={`text-2xl font-bold ${isDark ? "text-gray-100" : "text-gray-900"}`}>Events</h1>
         <Link
           to="/events/new"
           className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-700"
@@ -60,38 +63,38 @@ export function EventListPage() {
       </div>
 
       {events.length === 0 ? (
-        <p className="py-12 text-center text-gray-500">
+        <p className={`py-12 text-center ${isDark ? "text-gray-400" : "text-gray-500"}`}>
           No events found.{" "}
-          <Link to="/events/new" className="text-indigo-600 hover:underline">
+          <Link to="/events/new" className="text-indigo-400 hover:underline">
             Create your first event
           </Link>
         </p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className={`overflow-hidden rounded-lg border shadow-sm ${isDark ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-white"}`}>
+          <table className={`min-w-full divide-y ${isDark ? "divide-gray-700" : "divide-gray-200"}`}>
+            <thead className={isDark ? "bg-gray-700/50" : "bg-gray-50"}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                   Title
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                   Venue
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className={`px-6 py-3 text-right text-xs font-medium uppercase tracking-wider ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className={`divide-y ${isDark ? "divide-gray-700" : "divide-gray-200"}`}>
               {events.map((event) => (
-                <tr key={event.id} className="hover:bg-gray-50">
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                <tr key={event.id} className={isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"}>
+                  <td className={`whitespace-nowrap px-6 py-4 text-sm font-medium ${isDark ? "text-gray-100" : "text-gray-900"}`}>
                     {event.title}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm">
@@ -101,10 +104,10 @@ export function EventListPage() {
                       {event.status}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  <td className={`whitespace-nowrap px-6 py-4 text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                     {dateFormatter.format(new Date(event.startAt))}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  <td className={`whitespace-nowrap px-6 py-4 text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                     {event.venue}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
@@ -112,7 +115,7 @@ export function EventListPage() {
                       {event.status === "published" && (
                         <Link
                           to={`/e/${event.slug}`}
-                          className="text-gray-400 hover:text-indigo-600"
+                          className={`${isDark ? "text-gray-500 hover:text-indigo-400" : "text-gray-400 hover:text-indigo-600"}`}
                           aria-label={`View public page for ${event.title}`}
                         >
                           <span aria-hidden="true">🔗</span>
@@ -123,14 +126,14 @@ export function EventListPage() {
                       )}
                       <Link
                         to={`/events/${event.id}/edit`}
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                        className="font-medium text-indigo-400 hover:text-indigo-300"
                       >
                         Edit
                       </Link>
                       <button
                         type="button"
                         onClick={() => handleDelete(event.id)}
-                        className="font-medium text-red-600 hover:text-red-500"
+                        className="font-medium text-red-500 hover:text-red-400"
                       >
                         Delete
                       </button>
