@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Eventudio</title>
+    <script>
+      // Single-page app redirect for GitHub Pages.
+      // Encodes the current path/query/hash into a query string and redirects
+      // to index.html, which then restores the URL via the companion script.
+      // For a GitHub Pages project site the deployment root is always the first
+      // URL path segment (e.g. '/live-events-dashboard'). This avoids hardcoding
+      // the repo name here while still working for any deployment depth.
+      var segments = window.location.pathname.split('/');
+      var base = segments[1] ? '/' + segments[1] : '';
+      var path = window.location.pathname.slice(base.length);
+      var search = window.location.search;
+      var hash = window.location.hash;
+      // If we are exactly at the base root with no sub-path, normalise to
+      // a trailing slash so index.html is served instead of looping.
+      if (!path || path === '/') {
+        window.location.replace(base + '/');
+      } else {
+        var redirect =
+          base +
+          '/?p=' +
+          encodeURIComponent(path + search) +
+          (hash ? '&h=' + encodeURIComponent(hash) : '');
+        window.location.replace(redirect);
+      }
+    </script>
+  </head>
+  <body></body>
+</html>

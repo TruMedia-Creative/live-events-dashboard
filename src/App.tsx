@@ -69,7 +69,7 @@ function TenantSlugWrapper() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/live-events-dashboard">
       <Routes>
         {/* Tenant from URL path */}
         <Route
