@@ -1,1 +1,1 @@
-export { isAllowedStreamUrl } from "./streamUrl";
+export { isAllowedStreamUrl, isValidBannerUrl } from "./streamUrl";

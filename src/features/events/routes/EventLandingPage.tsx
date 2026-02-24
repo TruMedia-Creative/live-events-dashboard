@@ -4,7 +4,7 @@ import { getEventBySlug } from "../../../lib/api/mock";
 import { useTenant } from "../../tenants";
 import type { EventData, StreamConfig, Speaker, EventResource, Session } from "../model";
 import { LoadingSpinner } from "../../../components/ui";
-import { isAllowedStreamUrl, isHttpsUrl } from "../utils/streamUrl";
+import { isAllowedStreamUrl, isValidBannerUrl } from "../utils/streamUrl";
 
 function formatEventDate(startAt: string, endAt: string, timezone: string): string {
   const start = new Date(startAt);
@@ -214,7 +214,7 @@ export default function EventLandingPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Event Banner */}
-      {event.bannerUrl && isHttpsUrl(event.bannerUrl) && (
+      {event.bannerUrl && isValidBannerUrl(event.bannerUrl) && (
         <div className="mb-8 overflow-hidden rounded-lg shadow-lg">
           <img
             src={event.bannerUrl}

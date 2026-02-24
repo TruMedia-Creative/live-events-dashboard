@@ -10,6 +10,7 @@ import {
 import { createEventSchema, type CreateEventInput } from "../model";
 import type { EventData } from "../model";
 import type { AppShellOutletContext } from "../../../components/layout/AppShell";
+import { BannerUpload } from "../../../components/ui";
 
 const TIMEZONES = [
   { value: "America/New_York", label: "Eastern (ET)" },
@@ -348,18 +349,21 @@ export function EventFormPage() {
           )}
         </div>
 
-        {/* Banner URL */}
+        {/* Event Banner */}
         <div>
-          <label htmlFor="bannerUrl" className={labelClass}>
-            Event Banner URL <span className={isDark ? "text-gray-500" : "text-gray-400"}>(optional — jpeg, png, etc.)</span>
+          <label className={labelClass}>
+            Event Banner{" "}
+            <span className={isDark ? "text-gray-500" : "text-gray-400"}>
+              (optional — upload from your machine)
+            </span>
           </label>
-          <input
-            id="bannerUrl"
-            type="url"
-            placeholder="https://example.com/banner.jpg"
-            {...register("bannerUrl")}
-            className={fieldInputClass}
-          />
+          <div className="mt-1">
+            <BannerUpload
+              value={watch("bannerUrl") || undefined}
+              onChange={(val) => setValue("bannerUrl", val ?? "")}
+              isDark={isDark}
+            />
+          </div>
           {errors.bannerUrl && (
             <p className="mt-1 text-sm text-red-500">{errors.bannerUrl.message}</p>
           )}

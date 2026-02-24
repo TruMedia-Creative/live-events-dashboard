@@ -25,3 +25,16 @@ export function isHttpsUrl(url: string): boolean {
     return false;
   }
 }
+
+/** Matches only safe, base64-encoded image data URLs for supported formats. */
+const SAFE_DATA_IMAGE_RE =
+  /^data:image\/(jpeg|png|gif|webp);base64,[A-Za-z0-9+/]+=*$/;
+
+/**
+ * Returns true for valid banner URLs: either an HTTPS URL or a well-formed
+ * base64-encoded image data URL produced by the local image uploader.
+ */
+export function isValidBannerUrl(url: string): boolean {
+  if (SAFE_DATA_IMAGE_RE.test(url)) return true;
+  return isHttpsUrl(url);
+}
