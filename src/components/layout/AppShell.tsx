@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useTenant } from "../../features/tenants";
 import { hasAccessibleContrast } from "../../lib/colorContrast";
+import { useAuth } from "../../features/auth";
 
 type AppTheme = "light" | "dark";
 
@@ -22,6 +23,13 @@ function persistSetting(key: string, value: string) {
 
 export function AppShell() {
   const { tenant } = useTenant();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate("/login", { replace: true });
+  }
   const [theme, setTheme] = useState<AppTheme>(() => {
     if (typeof window === "undefined") return "light";
     return window.localStorage.getItem("app.theme") === "dark" ? "dark" : "light";
@@ -88,6 +96,12 @@ export function AppShell() {
               <Link to="/settings" className={linkClasses}>
                 Settings
               </Link>
+              <button
+                onClick={handleLogout}
+                className={linkClasses + " cursor-pointer"}
+              >
+                Logout
+              </button>
             </nav>
           </div>
         </div>
