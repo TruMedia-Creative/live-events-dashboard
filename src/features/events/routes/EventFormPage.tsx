@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useOutletContext } from "react-router-dom";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { useTenant } from "../../tenants";
 import {
   getEventById,
@@ -75,7 +75,6 @@ export function EventFormPage() {
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     reset,
     setError,
@@ -136,14 +135,14 @@ export function EventFormPage() {
   }, [eventId, reset]);
 
   // Auto-generate slug from title on create
-  const title = watch("title");
+  const title = useWatch({ control, name: "title" });
   useEffect(() => {
     if (!isEditing) {
       setValue("slug", slugify(title ?? ""));
     }
   }, [title, isEditing, setValue]);
 
-  const streamProvider = watch("stream.provider");
+  const streamProvider = useWatch({ control, name: "stream.provider" });
 
   const onSubmit = async (formData: CreateEventInput) => {
     setSubmitError(null);
