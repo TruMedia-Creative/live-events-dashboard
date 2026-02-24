@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useParams, Navigate, useLocation } from "react-router-dom";
+import type { ReactNode } from "react";
 import { TenantProvider, useTenant } from "./features/tenants";
 import { AppShell, PublicLayout } from "./components/layout";
 import { LoadingSpinner } from "./components/ui";
@@ -10,8 +11,21 @@ import {
 } from "./features/events/routes";
 import { AdminDashboardPage } from "./features/admin/routes";
 import { SettingsPage } from "./features/settings/routes";
+import { AuthProvider, useAuth, LoginPage } from "./features/auth";
 
-function TenantGate({ children }: { children: React.ReactNode }) {
+function RequireAuth({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const from = location.pathname + location.search + location.hash;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from }} replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function TenantGate({ children }: { children: ReactNode }) {
   const { loading, tenant } = useTenant();
 
   if (loading) return <LoadingSpinner />;
@@ -40,7 +54,7 @@ function TenantRoutes() {
     <TenantGate>
       <Routes>
         {/* Client area */}
-        <Route element={<AppShell />}>
+        <Route element={<RequireAuth><AppShell /></RequireAuth>}>
           <Route index element={<DashboardPage />} />
           <Route path="events" element={<EventListPage />} />
           <Route path="events/new" element={<EventFormPage />} />
@@ -70,23 +84,28 @@ function TenantSlugWrapper() {
 function App() {
   return (
     <BrowserRouter basename="/live-events-dashboard">
-      <Routes>
-        {/* Tenant from URL path */}
-        <Route
-          path="/t/:tenantSlug/*"
-          element={<TenantSlugWrapper />}
-        />
+      <AuthProvider>
+        <Routes>
+          {/* Login page */}
+          <Route path="/login" element={<LoginPage />} />
 
-        {/* Tenant from hostname (default) */}
-        <Route
-          path="/*"
-          element={
-            <TenantProvider>
-              <TenantRoutes />
-            </TenantProvider>
-          }
-        />
-      </Routes>
+          {/* Tenant from URL path */}
+          <Route
+            path="/t/:tenantSlug/*"
+            element={<TenantSlugWrapper />}
+          />
+
+          {/* Tenant from hostname (default) */}
+          <Route
+            path="/*"
+            element={
+              <TenantProvider>
+                <TenantRoutes />
+              </TenantProvider>
+            }
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
