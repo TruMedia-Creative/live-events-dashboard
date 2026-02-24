@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useParams, Navigate, useLocation } from "react-router-dom";
+import type { ReactNode } from "react";
 import { TenantProvider, useTenant } from "./features/tenants";
 import { AppShell, PublicLayout } from "./components/layout";
 import { LoadingSpinner } from "./components/ui";
@@ -12,18 +13,19 @@ import { AdminDashboardPage } from "./features/admin/routes";
 import { SettingsPage } from "./features/settings/routes";
 import { AuthProvider, useAuth, LoginPage } from "./features/auth";
 
-function RequireAuth({ children }: { children: React.ReactNode }) {
+function RequireAuth({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
+  const from = location.pathname + location.search + location.hash;
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    return <Navigate to="/login" state={{ from }} replace />;
   }
 
   return <>{children}</>;
 }
 
-function TenantGate({ children }: { children: React.ReactNode }) {
+function TenantGate({ children }: { children: ReactNode }) {
   const { loading, tenant } = useTenant();
 
   if (loading) return <LoadingSpinner />;

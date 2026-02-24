@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import type { ReactNode } from "react";
 
 interface AuthContextValue {
   isAuthenticated: boolean;
@@ -30,7 +31,7 @@ function writeSession(value: boolean) {
   }
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(readSession);
 
   function login(username: string, password: string): boolean {
