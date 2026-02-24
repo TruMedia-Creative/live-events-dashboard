@@ -43,7 +43,12 @@ export const createEventSchema = z.object({
   timezone: z.string().min(1),
   venue: z.string().optional(),
   description: z.string().min(1),
-  bannerUrl: z.url().optional(),
+  bannerUrl: z
+    .union([
+      z.url(),
+      z.string().regex(/^data:image\/(jpeg|png|gif|webp);base64,[A-Za-z0-9+/]+=*$/),
+    ])
+    .optional(),
   stream: streamConfigSchema.optional(),
   resources: eventResourceSchema.array(),
   speakers: speakerSchema.array(),
