@@ -67,3 +67,22 @@ When generating code:
 ## Testing guidance (optional)
 - If tests are requested, use Vitest + React Testing Library
 - Focus tests on validation and URL parsing first
+
+## Toolchain + bootstrap
+- Node version is pinned in `.nvmrc` (currently `22`). Use `nvm use` or the version from that file.
+- pnpm is the only supported package manager (do **not** use npm or yarn).
+- pnpm is activated via Corepack — never install it globally with npm.
+- All commands should be run from the **repo root**.
+
+### Standard agent sequence
+```sh
+# 1. Install (only needed once, or after lockfile changes)
+pnpm bootstrap   # runs: corepack enable && pnpm install --frozen-lockfile
+
+# 2. Validate (lint + typecheck + build)
+pnpm check       # runs: pnpm lint && pnpm typecheck && pnpm build
+```
+
+### Performance tips
+- Skip `pnpm bootstrap` if `node_modules` is already up-to-date (lockfile unchanged).
+- Prefer `pnpm lint` / `pnpm typecheck` / `pnpm build` individually when only one check is needed.
