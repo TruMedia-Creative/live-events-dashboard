@@ -70,7 +70,7 @@ When generating code:
 
 ## Toolchain + bootstrap
 - Node version is pinned in `.nvmrc` (currently `22`). Use `nvm use` or the version from that file.
-- pnpm is the only supported package manager (do **not** use npm or yarn).
+- pnpm is the primary and CI-supported package manager. npm may work but is not guaranteed; prefer pnpm and do **not** use yarn.
 - pnpm is activated via Corepack — never install it globally with npm.
 - All commands should be run from the **repo root**.
 
