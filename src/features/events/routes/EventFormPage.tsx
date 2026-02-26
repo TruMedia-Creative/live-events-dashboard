@@ -143,6 +143,7 @@ export function EventFormPage() {
   }, [title, isEditing, setValue]);
 
   const streamProvider = useWatch({ control, name: "stream.provider" });
+  const bannerUrl = useWatch({ control, name: "bannerUrl" });
 
   const onSubmit = async (formData: CreateEventInput) => {
     setSubmitError(null);
@@ -358,7 +359,7 @@ export function EventFormPage() {
           </label>
           <div className="mt-1">
             <BannerUpload
-              value={watch("bannerUrl") || undefined}
+              value={bannerUrl || undefined}
               onChange={(val) => setValue("bannerUrl", val ?? "")}
               isDark={isDark}
             />
