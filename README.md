@@ -33,7 +33,8 @@ pnpm bootstrap
 | `pnpm dev:api` | Build then run API app |
 | `pnpm check` | Validate dashboard app |
 | `pnpm check:all` | Validate dashboard + all workspace packages |
-| `pnpm test` | Run dashboard tests |
+| `pnpm test` | Run dashboard tests in watch mode |
+| `pnpm test:watch` | Run dashboard tests in watch mode |
 | `pnpm test:all` | Run dashboard tests + all workspace tests (if present) |
 
 ## Monorepo Structure

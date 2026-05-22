@@ -15,6 +15,26 @@ const events: Event[] = [
     venue: 'Online',
     description: 'A virtual event for AV production teams.',
     status: 'published',
+    stream: {
+      provider: 'youtube',
+      embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      isLive: true,
+    },
+    resources: [
+      {
+        id: 'resource-1',
+        name: 'Show Run of Show',
+        url: 'https://example.com/run-of-show.pdf',
+        type: 'pdf',
+      },
+    ],
+    speakers: [
+      {
+        name: 'Ava Chen',
+        title: 'Executive Producer',
+        company: 'Eventudio',
+      },
+    ],
   },
 ]
 
@@ -60,9 +80,11 @@ const server = createServer((req, res) => {
 
         res.writeHead(201, { 'content-type': 'application/json' })
         res.end(JSON.stringify(parsed.data))
-      } catch {
+      } catch (error) {
         res.writeHead(400, { 'content-type': 'application/json' })
-        res.end(JSON.stringify({ error: 'Malformed JSON payload' }))
+        const message =
+          error instanceof Error ? error.message : 'Malformed JSON payload'
+        res.end(JSON.stringify({ error: message }))
       }
     })
     return

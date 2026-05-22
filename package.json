@@ -15,8 +15,9 @@
     "bootstrap": "corepack enable && pnpm install --frozen-lockfile",
     "check": "pnpm lint && pnpm typecheck && pnpm build",
     "check:all": "pnpm -r --filter './packages/*' --if-present check && pnpm check && pnpm -r --filter './apps/*' --if-present check",
-    "test": "vitest --run",
-    "test:all": "pnpm test && pnpm -r --filter './apps/*' --if-present test && pnpm -r --filter './packages/*' --if-present test"
+    "test": "vitest",
+    "test:watch": "vitest",
+    "test:all": "pnpm test -- --run && pnpm -r --filter './apps/*' --if-present test && pnpm -r --filter './packages/*' --if-present test"
   },
   "dependencies": {
     "react": "^19.2.0",
