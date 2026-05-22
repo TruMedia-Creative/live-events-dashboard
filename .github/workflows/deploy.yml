@@ -44,7 +44,7 @@ jobs:
             ${{ runner.os }}-pnpm-
 
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
