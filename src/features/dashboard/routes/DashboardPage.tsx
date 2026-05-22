@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useTenant } from "../../tenants";
 import { getEvents } from "../../../lib/api";
 import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
@@ -15,24 +15,31 @@ const STATUS_VARIANTS: Record<string, "secondary" | "default" | "outline"> = {
 
 export function DashboardPage() {
   const { tenant, loading: tenantLoading } = useTenant();
+  const shouldReduceMotion = useReducedMotion();
   const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (!tenant) return;
 
     let cancelled = false;
+    setHasError(false);
 
     const loadEvents = async () => {
       try {
         const data = await getEvents(tenant.id);
         if (cancelled) return;
         setEvents(data);
-      } catch {
+      } catch (error) {
         if (cancelled) return;
+        console.error("Failed to load dashboard events", error);
+        setHasError(true);
+        return;
       } finally {
-        if (cancelled) return;
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
@@ -74,7 +81,7 @@ export function DashboardPage() {
         {stats.map((s, index) => (
           <motion.div
             key={s.label}
-            initial={{ opacity: 0, y: 14 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.05 * index }}
           >
@@ -104,18 +111,28 @@ export function DashboardPage() {
         </div>
 
         {recent.length === 0 ? (
-          <p className="mt-4 text-muted-foreground">
-            No events yet.{" "}
-            <Link to="/events/new" className="text-indigo-600 hover:underline">
-              Create your first event
-            </Link>
-          </p>
+          hasError ? (
+            <div role="alert" className="mt-4 flex items-center gap-2 text-destructive">
+              <span aria-hidden="true">⚠️</span>
+              <p>
+                We couldn&apos;t load events right now. Please refresh and try
+                again.
+              </p>
+            </div>
+          ) : (
+            <p className="mt-4 text-muted-foreground">
+              No events yet.{" "}
+              <Link to="/events/new" className="text-primary hover:underline">
+                Create your first event
+              </Link>
+            </p>
+          )
         ) : (
           <ul className="mt-4 divide-y divide-border rounded-lg border bg-card shadow-sm">
             {recent.map((event) => (
               <motion.li
                 key={event.id}
-                initial={{ opacity: 0, y: 8 }}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
                 className="flex items-center justify-between px-6 py-4"
