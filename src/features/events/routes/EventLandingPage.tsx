@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getEventBySlug } from "../../../lib/api/mock";
+import { getEventBySlug } from "../../../lib/api";
 import { useTenant } from "../../tenants";
 import type { EventData, StreamConfig, Speaker, EventResource, Session } from "../model";
 import { LoadingSpinner } from "../../../components/ui";

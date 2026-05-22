@@ -6,7 +6,7 @@ import {
   getEventById,
   createEvent,
   updateEvent,
-} from "../../../lib/api/mock";
+} from "../../../lib/api";
 import { createEventSchema, type CreateEventInput } from "../model";
 import type { EventData } from "../model";
 import type { AppShellOutletContext } from "../../../components/layout/AppShell";

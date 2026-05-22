@@ -12,6 +12,8 @@ import {
 import { AdminDashboardPage } from "./features/admin/routes";
 import { SettingsPage } from "./features/settings/routes";
 import { AuthProvider, useAuth, LoginPage } from "./features/auth";
+import type { AuthUser } from "./features/auth";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -22,6 +24,18 @@ function RequireAuth({ children }: { children: ReactNode }) {
     return <Navigate to="/login" state={{ from }} replace />;
   }
 
+  return <>{children}</>;
+}
+
+function RequireRole({
+  role,
+  children,
+}: {
+  role: AuthUser["role"];
+  children: ReactNode;
+}) {
+  const { user } = useAuth();
+  if (user?.role !== role) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
@@ -59,7 +73,7 @@ function TenantRoutes() {
           <Route path="events" element={<EventListPage />} />
           <Route path="events/new" element={<EventFormPage />} />
           <Route path="events/:eventId/edit" element={<EventFormPage />} />
-          <Route path="admin" element={<AdminDashboardPage />} />
+          <Route path="admin" element={<RequireRole role="admin"><AdminDashboardPage /></RequireRole>} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
 
@@ -83,6 +97,7 @@ function TenantSlugWrapper() {
 
 function App() {
   return (
+    <ErrorBoundary>
     <BrowserRouter basename="/live-events-dashboard">
       <AuthProvider>
         <Routes>
@@ -107,6 +122,7 @@ function App() {
         </Routes>
       </AuthProvider>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

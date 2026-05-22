@@ -4,7 +4,7 @@ import {
   getTenants,
   updateEvent,
   deleteEvent,
-} from "../../../lib/api/mock";
+} from "../../../lib/api";
 import { LoadingSpinner } from "../../../components/ui";
 import type { EventData } from "../../events/model";
 import type { Tenant } from "../../tenants/model";

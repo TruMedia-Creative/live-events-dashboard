@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTenant } from "../../tenants";
-import { getEvents } from "../../../lib/api/mock/events";
+import { getEvents } from "../../../lib/api";
 import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
 import type { EventData } from "../../events/model/types";
 

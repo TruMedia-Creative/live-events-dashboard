@@ -4,7 +4,7 @@ import {
   type ReactNode,
 } from "react";
 import type { Tenant } from "../model";
-import { getTenantBySlug } from "../../../lib/api/mock";
+import { getTenantBySlug } from "../../../lib/api";
 import { TenantContext } from "./tenantContextValue";
 
 export type { TenantContextValue } from "./tenantContextValue";

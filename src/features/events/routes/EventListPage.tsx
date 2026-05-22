@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import { useTenant } from "../../tenants";
-import { getEvents, deleteEvent } from "../../../lib/api/mock/events";
+import { getEvents, deleteEvent } from "../../../lib/api";
 import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
 import type { EventData, EventStatus } from "../model/types";
 import type { AppShellOutletContext } from "../../../components/layout/AppShell";
