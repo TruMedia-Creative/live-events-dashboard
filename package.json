@@ -6,13 +6,17 @@
   "packageManager": "pnpm@10.0.0",
   "scripts": {
     "dev": "vite",
+    "dev:marketing": "pnpm --dir apps/marketing dev",
+    "dev:api": "pnpm --dir apps/api dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "bootstrap": "corepack enable && pnpm install --frozen-lockfile",
     "check": "pnpm lint && pnpm typecheck && pnpm build",
-    "test": "vitest"
+    "check:all": "pnpm -r --filter './packages/*' --if-present check && pnpm check && pnpm -r --filter './apps/*' --if-present check",
+    "test": "vitest --run",
+    "test:all": "pnpm test && pnpm -r --filter './apps/*' --if-present test -- --run && pnpm -r --filter './packages/*' --if-present test -- --run"
   },
   "dependencies": {
     "react": "^19.2.0",
