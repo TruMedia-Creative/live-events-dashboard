@@ -25,3 +25,5 @@ vite.config.ts.timestamp-*
 
 # Test coverage
 coverage/
+# Machine-generated codebase scan
+docs/codebase/.codebase-scan.txt
