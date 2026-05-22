@@ -53,7 +53,8 @@ pnpm bootstrap
 
 ## Deployment
 
-GitHub Pages deployment still publishes the dashboard app (`dist/`) while CI now validates the full workspace via `pnpm check:all`.
+GitHub Pages deployment publishes only the root dashboard app (`dist/`), while CI validates the full workspace via `pnpm check:all`.
+The marketing app and API backend are workspace apps intended for separate hosting targets (for example Vercel/Netlify for marketing and a Node host/container platform for API).
 
 ## License
 
