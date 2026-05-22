@@ -3,6 +3,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useTenant } from "../../features/tenants";
 import { hasAccessibleContrast } from "../../lib/colorContrast";
 import { useAuth } from "../../features/auth";
+import { cn } from "../../lib/utils";
 
 type AppTheme = "light" | "dark";
 
@@ -48,9 +49,10 @@ export function AppShell() {
   }, [accentColor]);
 
   const isDark = theme === "dark";
-  const shellClasses = isDark
-    ? "min-h-screen bg-gray-900 text-gray-100"
-    : "min-h-screen bg-gray-50 text-gray-900";
+  const shellClasses = cn(
+    "min-h-screen bg-background text-foreground",
+    isDark && "dark",
+  );
   const headerClasses = isDark
     ? "border-b border-gray-700 bg-gray-800 shadow-sm"
     : "border-b border-gray-200 bg-white shadow-sm";

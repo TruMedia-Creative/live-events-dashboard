@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useTenant } from "../../tenants";
 import { getEvents } from "../../../lib/api";
 import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from "../../../components/ui";
 import type { EventData } from "../../events/model/types";
 
-const STATUS_STYLES: Record<string, string> = {
-  draft: "bg-yellow-100 text-yellow-800",
-  published: "bg-green-100 text-green-800",
-  archived: "bg-gray-100 text-gray-600",
+const STATUS_VARIANTS: Record<string, "secondary" | "default" | "outline"> = {
+  draft: "secondary",
+  published: "default",
+  archived: "outline",
 };
 
 export function DashboardPage() {
@@ -21,16 +23,20 @@ export function DashboardPage() {
 
     let cancelled = false;
 
-    getEvents(tenant.id)
-      .then((data) => {
+    const loadEvents = async () => {
+      try {
+        const data = await getEvents(tenant.id);
         if (cancelled) return;
         setEvents(data);
-        setLoading(false);
-      })
-      .catch(() => {
+      } catch {
+        if (cancelled) return;
+      } finally {
         if (cancelled) return;
         setLoading(false);
-      });
+      }
+    };
+
+    void loadEvents();
 
     return () => {
       cancelled = true;
@@ -53,77 +59,88 @@ export function DashboardPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="mt-1 text-gray-600">
+          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="mt-1 text-muted-foreground">
             Welcome back, {tenant?.name ?? "Team"}
           </p>
         </div>
-        <Link
-          to="/events/new"
-          className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-700"
-        >
-          + Create New Event
-        </Link>
+        <Button asChild>
+          <Link to="/events/new">+ Create New Event</Link>
+        </Button>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {stats.map((s) => (
-          <div
+        {stats.map((s, index) => (
+          <motion.div
             key={s.label}
-            className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.05 * index }}
           >
-            <p className="text-sm font-medium text-gray-500">{s.label}</p>
-            <p className={`mt-2 text-3xl font-bold ${s.color}`}>{s.value}</p>
-          </div>
+            <Card>
+              <CardHeader className="pb-1">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {s.label}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
 
       {/* Recent Events */}
       <div>
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-foreground">
             Recent Events
           </h2>
-          <Link
-            to="/events"
-            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            View all →
-          </Link>
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/events">View all →</Link>
+          </Button>
         </div>
 
         {recent.length === 0 ? (
-          <p className="mt-4 text-gray-500">
+          <p className="mt-4 text-muted-foreground">
             No events yet.{" "}
             <Link to="/events/new" className="text-indigo-600 hover:underline">
               Create your first event
             </Link>
           </p>
         ) : (
-          <ul className="mt-4 divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white shadow-sm">
+          <ul className="mt-4 divide-y divide-border rounded-lg border bg-card shadow-sm">
             {recent.map((event) => (
-              <li key={event.id} className="flex items-center justify-between px-6 py-4">
+              <motion.li
+                key={event.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center justify-between px-6 py-4"
+              >
                 <div>
                   <Link
                     to={`/events/${event.id}/edit`}
-                    className="font-medium text-gray-900 hover:text-indigo-600"
+                    className="font-medium text-foreground hover:text-primary"
                   >
                     {event.title}
                   </Link>
-                  <p className="mt-0.5 text-sm text-gray-500">
+                  <p className="mt-0.5 text-sm text-muted-foreground">
                     {new Intl.DateTimeFormat("en-US", {
                       dateStyle: "medium",
                     }).format(new Date(event.startAt))}{" "}
                     · {event.venue}
                   </p>
                 </div>
-                <span
-                  className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[event.status] ?? ""}`}
+                <Badge
+                  variant={STATUS_VARIANTS[event.status] ?? "outline"}
+                  className="capitalize"
                 >
                   {event.status}
-                </span>
-              </li>
+                </Badge>
+              </motion.li>
             ))}
           </ul>
         )}

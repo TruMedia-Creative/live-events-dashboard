@@ -16,6 +16,7 @@ This repository is now a **pnpm monorepo** for the Eventudio platform.
 
 - Node 22 + pnpm workspaces
 - Dashboard + Marketing + Admin + Docs: Vite + React + TypeScript
+- Dashboard UI: Tailwind CSS v4 + shadcn/ui primitives + Framer Motion
 - API: Node.js + TypeScript
 - Shared packages: TypeScript + Zod
 
