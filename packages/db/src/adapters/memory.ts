@@ -2,15 +2,16 @@ import type { Event } from '@eventudio/contracts'
 import type { EventRepository } from '../types'
 
 export function createMemoryEventRepository(seed: Event[] = []): EventRepository {
-  const state = [...seed]
+  const state = seed.map((event) => structuredClone(event))
 
   return {
     async list() {
-      return [...state]
+      return state.map((event) => structuredClone(event))
     },
     async create(event: Event) {
-      state.push(event)
-      return event
+      const stored = structuredClone(event)
+      state.push(stored)
+      return structuredClone(stored)
     },
   }
 }
