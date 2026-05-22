@@ -29,7 +29,8 @@ pnpm bootstrap
 | --- | --- |
 | `pnpm dev` | Run dashboard app (root) |
 | `pnpm dev:marketing` | Run marketing app |
-| `pnpm dev:api` | Run API app (after build) |
+| `pnpm --dir apps/api build` | Build API backend |
+| `pnpm dev:api` | Build then run API app |
 | `pnpm check` | Validate dashboard app |
 | `pnpm check:all` | Validate dashboard + all workspace packages |
 | `pnpm test` | Run dashboard tests |

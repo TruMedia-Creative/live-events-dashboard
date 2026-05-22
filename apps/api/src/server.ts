@@ -40,14 +40,29 @@ const server = createServer((req, res) => {
     req.on('end', () => {
       try {
         const payload = JSON.parse(Buffer.concat(chunks).toString('utf8'))
-        const parsed = eventSchema.parse(payload)
-        events.push(parsed)
+        const parsed = eventSchema.safeParse(payload)
+
+        if (!parsed.success) {
+          res.writeHead(400, { 'content-type': 'application/json' })
+          res.end(
+            JSON.stringify({
+              error: 'Invalid event payload',
+              issues: parsed.error.issues.map(({ path, message }) => ({
+                path: path.join('.'),
+                message,
+              })),
+            }),
+          )
+          return
+        }
+
+        events.push(parsed.data)
 
         res.writeHead(201, { 'content-type': 'application/json' })
-        res.end(JSON.stringify(parsed))
+        res.end(JSON.stringify(parsed.data))
       } catch {
         res.writeHead(400, { 'content-type': 'application/json' })
-        res.end(JSON.stringify({ error: 'Invalid event payload' }))
+        res.end(JSON.stringify({ error: 'Malformed JSON payload' }))
       }
     })
     return
