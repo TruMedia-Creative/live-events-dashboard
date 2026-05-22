@@ -67,10 +67,12 @@ const server = createServer((req, res) => {
           res.end(
             JSON.stringify({
               error: 'Invalid event payload',
-              issues: parsed.error.issues.map(({ path, message, code }) => ({
-                path: path.join('.'),
-                message,
-                code,
+              issues: parsed.error.issues.map((issue) => ({
+                path: issue.path.join('.'),
+                message: issue.message,
+                code: issue.code,
+                expected: 'expected' in issue ? issue.expected : undefined,
+                received: 'received' in issue ? issue.received : undefined,
               })),
             }),
           )
