@@ -6,15 +6,18 @@ This repository is now a **pnpm monorepo** for the Eventudio platform.
 
 - **Dashboard (root app)**: multi-tenant operations dashboard for event teams (`/`)
 - **Marketing site**: public landing page (`apps/marketing`)
+- **Admin panel app**: dedicated control-plane shell (`apps/admin`)
+- **Docs app**: documentation portal shell (`apps/docs`)
 - **API backend**: lightweight event API service (`apps/api`)
 - **Shared contracts**: shared Zod schemas and types (`packages/contracts`)
+- **DB package**: shared database abstractions/adapters (`packages/db`)
 
 ## Tech Stack
 
 - Node 22 + pnpm workspaces
-- Dashboard + Marketing: Vite + React + TypeScript
+- Dashboard + Marketing + Admin + Docs: Vite + React + TypeScript
 - API: Node.js + TypeScript
-- Shared contracts: TypeScript + Zod
+- Shared packages: TypeScript + Zod
 
 ## Quick Start
 
@@ -29,6 +32,8 @@ pnpm bootstrap
 | --- | --- |
 | `pnpm dev` | Run dashboard app (root) |
 | `pnpm dev:marketing` | Run marketing app |
+| `pnpm dev:admin` | Run admin panel app |
+| `pnpm dev:docs` | Run docs app |
 | `pnpm --dir apps/api build` | Build API backend |
 | `pnpm dev:api` | Build then run API app |
 | `pnpm check` | Validate dashboard app |
@@ -43,9 +48,12 @@ pnpm bootstrap
 .
 ├── apps/
 │   ├── api/
+│   ├── admin/
+│   ├── docs/
 │   └── marketing/
 ├── packages/
-│   └── contracts/
+│   ├── contracts/
+│   └── db/
 ├── src/                     # Dashboard app source (existing app)
 ├── .github/workflows/       # CI + deploy workflows
 └── pnpm-workspace.yaml
@@ -54,7 +62,7 @@ pnpm bootstrap
 ## Deployment
 
 GitHub Pages deployment publishes only the root dashboard app (`dist/`), while CI validates the full workspace via `pnpm check:all`.
-The marketing app and API backend are workspace apps intended for separate hosting targets (for example Vercel/Netlify for marketing and a Node host/container platform for API).
+The marketing, admin, docs, and API workspace apps are intended for separate hosting targets (for example Vercel/Netlify for frontend apps and a Node host/container platform for API).
 
 ## License
 

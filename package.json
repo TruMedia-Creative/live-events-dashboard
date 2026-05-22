@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "dev:marketing": "pnpm --dir apps/marketing dev",
+    "dev:admin": "pnpm --dir apps/admin dev",
+    "dev:docs": "pnpm --dir apps/docs dev",
     "dev:api": "pnpm --dir apps/api dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
