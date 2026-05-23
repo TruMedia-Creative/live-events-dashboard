@@ -59,7 +59,7 @@ function App() {
         <div className="actions">
           <a href="#cta">Start for free</a>
           <a href="#faq" className="secondary">
-            Talk to sales
+            Read FAQ
           </a>
         </div>
       </section>
@@ -77,9 +77,9 @@ function App() {
       <section className="section">
         <h2>Attention Grabbing Title</h2>
         <div className="grid">
-          {problems.map((problem) => (
+          {problems.map((problem, index) => (
             <article key={problem}>
-              <h3>Problem</h3>
+              <h3>Problem {index + 1}</h3>
               <p>{problem}</p>
             </article>
           ))}
@@ -147,7 +147,7 @@ function App() {
 
       <section className="cta" id="cta">
         <h2>Ready to start?</h2>
-        <a href="#top">Start for free</a>
+        <a href="#top">Back to top</a>
       </section>
     </main>
   )
